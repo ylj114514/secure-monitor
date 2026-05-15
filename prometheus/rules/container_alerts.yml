@@ -1,0 +1,41 @@
+# 容器监控告警规则
+# 依赖 cAdvisor 指标和 security_exporter 中的模拟容器重启指标。
+
+groups:
+  - name: container-alerts
+    rules:
+      - alert: ContainerHighMemoryUsage
+        expr: container_memory_usage_bytes{name!=""} > 500 * 1024 * 1024
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "容器内存使用过高"
+          description: "容器 {{ $labels.name }} 内存使用超过 500MB，持续 2 分钟。"
+
+      - alert: ContainerHighCPUUsage
+        expr: rate(container_cpu_usage_seconds_total{name!=""}[2m]) * 100 > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "容器 CPU 使用率过高"
+          description: "容器 {{ $labels.name }} CPU 使用率较高，持续 2 分钟。"
+
+      - alert: ContainerTargetDown
+        expr: up{job="cadvisor"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "cAdvisor 采集目标不可用"
+          description: "cAdvisor 目标 {{ $labels.instance }} 已经不可用 1 分钟。"
+
+      - alert: ContainerRestartDetected
+        expr: increase(security_container_restart_total[5m]) > 0
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "检测到模拟容器重启事件"
+          description: "security_exporter 在 5 分钟内记录到容器重启模拟事件。"

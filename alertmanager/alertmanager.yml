@@ -1,0 +1,40 @@
+# Alertmanager 基础配置
+#
+# 本项目以 Alertmanager 页面展示为主，不配置真实邮件账号或外部通知密钥。
+# 后续可在 receivers 中扩展 email_configs、webhook_configs、企业微信或钉钉通知。
+
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: default-receiver
+  group_by:
+    - alertname
+    - severity
+    - job
+  group_wait: 10s
+  group_interval: 30s
+  repeat_interval: 1h
+  routes:
+    - matchers:
+        - severity="critical"
+      receiver: critical-receiver
+      continue: false
+    - matchers:
+        - severity="warning"
+      receiver: warning-receiver
+      continue: false
+
+inhibit_rules:
+  - source_matchers:
+      - severity="critical"
+    target_matchers:
+      - severity="warning"
+    equal:
+      - alertname
+      - instance
+
+receivers:
+  - name: default-receiver
+  - name: critical-receiver
+  - name: warning-receiver

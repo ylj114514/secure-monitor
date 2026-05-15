@@ -1,0 +1,59 @@
+{
+  "id": null,
+  "uid": "securemonitor-security",
+  "title": "SecureMonitor Security Dashboard",
+  "tags": ["secure-monitor", "security"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "失败登录次数",
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"refId": "A", "expr": "security_failed_login_total"}]
+    },
+    {
+      "type": "stat",
+      "title": "可疑请求次数",
+      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"refId": "A", "expr": "security_suspicious_request_total"}]
+    },
+    {
+      "type": "stat",
+      "title": "开放端口数量",
+      "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"refId": "A", "expr": "security_open_port_count"}]
+    },
+    {
+      "type": "stat",
+      "title": "高 CPU 进程数量",
+      "gridPos": {"x": 18, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"refId": "A", "expr": "security_high_cpu_process_count"}]
+    },
+    {
+      "type": "gauge",
+      "title": "安全风险分数",
+      "gridPos": {"x": 0, "y": 4, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"refId": "A", "expr": "security_risk_score"}],
+      "fieldConfig": {"defaults": {"unit": "none", "min": 0, "max": 100}, "overrides": []}
+    },
+    {
+      "type": "timeseries",
+      "title": "安全事件趋势",
+      "gridPos": {"x": 12, "y": 4, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "increase(security_failed_login_total[5m])", "legendFormat": "failed login"},
+        {"refId": "B", "expr": "increase(security_suspicious_request_total[5m])", "legendFormat": "suspicious request"},
+        {"refId": "C", "expr": "increase(security_container_restart_total[5m])", "legendFormat": "container restart"}
+      ]
+    }
+  ]
+}

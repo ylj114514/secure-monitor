@@ -1,0 +1,7 @@
+# kind 单节点 Kubernetes 集群配置
+# Kubernetes 部分为扩展研究和可选实验，Docker Compose 版是主实现。
+
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane

@@ -1,0 +1,48 @@
+{
+  "id": null,
+  "uid": "securemonitor-service",
+  "title": "SecureMonitor Service Dashboard",
+  "tags": ["secure-monitor", "service"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "demo-app up",
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"refId": "A", "expr": "up{job=\"dynamic-file-sd\", instance=\"demo-app:5000\"}"}]
+    },
+    {
+      "type": "stat",
+      "title": "probe_success",
+      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"refId": "A", "expr": "probe_success"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "probe_duration_seconds",
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"refId": "A", "expr": "probe_duration_seconds"}],
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []}
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP 请求总数",
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"refId": "A", "expr": "increase(demo_http_requests_total[5m])", "legendFormat": "{{path}} {{status}}"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "错误请求数",
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"refId": "A", "expr": "increase(demo_http_requests_total{status=~\"5..\"}[5m])", "legendFormat": "{{path}} {{status}}"}]
+    }
+  ]
+}

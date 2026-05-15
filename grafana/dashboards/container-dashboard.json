@@ -1,0 +1,46 @@
+{
+  "id": null,
+  "uid": "securemonitor-container",
+  "title": "SecureMonitor Container Dashboard",
+  "tags": ["secure-monitor", "container"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "cAdvisor up",
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"refId": "A", "expr": "up{job=\"cadvisor\"}"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "容器 CPU 使用率",
+      "gridPos": {"x": 6, "y": 0, "w": 18, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"refId": "A", "expr": "rate(container_cpu_usage_seconds_total{name!=\"\"}[2m]) * 100", "legendFormat": "{{name}}"}],
+      "fieldConfig": {"defaults": {"unit": "percent"}, "overrides": []}
+    },
+    {
+      "type": "timeseries",
+      "title": "容器内存使用",
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"refId": "A", "expr": "container_memory_usage_bytes{name!=\"\"}", "legendFormat": "{{name}}"}],
+      "fieldConfig": {"defaults": {"unit": "bytes"}, "overrides": []}
+    },
+    {
+      "type": "timeseries",
+      "title": "容器网络 IO",
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "rate(container_network_receive_bytes_total{name!=\"\"}[2m])", "legendFormat": "rx {{name}}"},
+        {"refId": "B", "expr": "rate(container_network_transmit_bytes_total{name!=\"\"}[2m])", "legendFormat": "tx {{name}}"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "Bps"}, "overrides": []}
+    }
+  ]
+}

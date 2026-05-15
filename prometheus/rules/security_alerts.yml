@@ -1,0 +1,41 @@
+# 安全指标告警规则
+# 依赖自定义 security_exporter 暴露的课程设计模拟安全指标。
+
+groups:
+  - name: security-alerts
+    rules:
+      - alert: TooManyFailedLogins
+        expr: increase(security_failed_login_total[5m]) > 10
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "失败登录次数过多"
+          description: "security_exporter 显示 5 分钟内失败登录次数超过 10 次。"
+
+      - alert: TooManySuspiciousRequests
+        expr: increase(security_suspicious_request_total[5m]) > 20
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "可疑请求次数过多"
+          description: "security_exporter 显示 5 分钟内可疑请求次数超过 20 次。"
+
+      - alert: HighOpenPortCount
+        expr: security_open_port_count > 10
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "开放端口数量偏高"
+          description: "模拟开放端口数量超过 10，当前值为 {{ $value }}。"
+
+      - alert: HighSecurityRiskScore
+        expr: security_risk_score > 80
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "安全风险分数过高"
+          description: "security_exporter 显示安全风险分数超过 80，当前值为 {{ $value }}。"

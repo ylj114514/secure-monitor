@@ -1,0 +1,41 @@
+# 主机性能告警规则
+# 依赖 node-exporter 指标，主要用于演示 CPU、内存、磁盘和采集目标状态告警。
+
+groups:
+  - name: host-alerts
+    rules:
+      - alert: HighCPUUsage
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "主机 CPU 使用率过高"
+          description: "实例 {{ $labels.instance }} CPU 使用率超过 80%，持续 2 分钟。"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "主机内存使用率过高"
+          description: "实例 {{ $labels.instance }} 内存使用率超过 80%，持续 2 分钟。"
+
+      - alert: HighDiskUsage
+        expr: (1 - (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs"})) * 100 > 85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "主机磁盘使用率过高"
+          description: "实例 {{ $labels.instance }} 挂载点 {{ $labels.mountpoint }} 磁盘使用率超过 85%，持续 2 分钟。"
+
+      - alert: HostTargetDown
+        expr: up{job="node-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "node-exporter 采集目标不可用"
+          description: "实例 {{ $labels.instance }} 的 node-exporter 已经不可用 1 分钟。"

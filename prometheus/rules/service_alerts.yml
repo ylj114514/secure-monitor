@@ -1,0 +1,32 @@
+# 服务可用性告警规则
+# 依赖 blackbox_exporter 探测指标和 demo-app 应用指标。
+
+groups:
+  - name: service-alerts
+    rules:
+      - alert: ServiceProbeFailed
+        expr: probe_success{job="blackbox-http"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "服务可用性探测失败"
+          description: "目标 {{ $labels.instance }} blackbox 探测失败，持续 1 分钟。"
+
+      - alert: DemoAppDown
+        expr: up{job="dynamic-file-sd", instance="demo-app:5000"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "demo-app 指标采集失败"
+          description: "Prometheus 无法采集 demo-app:5000 指标，持续 1 分钟。"
+
+      - alert: HighHttpErrorRate
+        expr: increase(demo_http_requests_total{status=~"5.."}[5m]) > 3
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "demo-app 错误请求增加"
+          description: "demo-app 5 分钟内 5xx 错误请求数量超过 3 次。"

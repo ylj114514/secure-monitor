@@ -1,0 +1,17 @@
+# Prometheus Operator ServiceMonitor 示例
+# 需要已安装 kube-prometheus-stack，且 Prometheus 实例选择匹配的 ServiceMonitor。
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: demo-app
+  labels:
+    release: kube-prometheus-stack
+spec:
+  selector:
+    matchLabels:
+      app: demo-app
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s

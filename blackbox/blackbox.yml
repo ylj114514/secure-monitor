@@ -1,0 +1,21 @@
+# blackbox_exporter 探测配置
+#
+# blackbox_exporter 不直接暴露业务指标，而是从外部访问目标服务，
+# 通过 probe_success、probe_duration_seconds 等指标表示服务可用性。
+
+modules:
+  http_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      method: GET
+      valid_http_versions:
+        - HTTP/1.1
+        - HTTP/2.0
+      valid_status_codes: []
+      follow_redirects: true
+      preferred_ip_protocol: ip4
+
+  tcp_connect:
+    prober: tcp
+    timeout: 5s

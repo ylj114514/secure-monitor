@@ -1,0 +1,12 @@
+[
+  {
+    "targets": [
+      "security-exporter:8000",
+      "demo-app:5000"
+    ],
+    "labels": {
+      "discovery": "file_sd",
+      "project": "secure-monitor"
+    }
+  }
+]
