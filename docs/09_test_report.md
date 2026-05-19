@@ -12,82 +12,36 @@
 | Docker Desktop / Docker Engine | 待本地运行后填写 |
 | Docker Compose | 待本地运行后填写 |
 | 浏览器 | 待本地运行后填写 |
-| 项目路径 | 待本地运行后填写 |
 
-## 测试人员
+## 测试结果汇总
 
-待本地运行后填写。
-
-## 测试结果汇总表
-
-| 测试编号 | 测试名称 | 结果 | 备注 |
+| 编号 | 名称 | 结果 | 备注 |
 | --- | --- | --- | --- |
-| T01 | Docker Compose 启动测试 | 待本地运行后填写 |  |
-| T02 | Prometheus Targets 测试 | 待本地运行后填写 |  |
-| T03 | 静态服务发现测试 | 待本地运行后填写 |  |
-| T04 | 动态服务发现测试 | 待本地运行后填写 |  |
-| T05 | node_exporter 主机指标测试 | 待本地运行后填写 |  |
-| T06 | cAdvisor 容器指标测试 | 待本地运行后填写 |  |
-| T07 | blackbox 服务探测测试 | 待本地运行后填写 |  |
-| T08 | security_exporter 指标测试 | 待本地运行后填写 |  |
-| T09 | Grafana 数据源测试 | 待本地运行后填写 |  |
-| T10 | Grafana Dashboard 测试 | 待本地运行后填写 |  |
-| T11 | CPU 高负载告警测试 | 待本地运行后填写 |  |
-| T12 | 服务宕机告警测试 | 待本地运行后填写 |  |
-| T13 | 失败登录安全告警测试 | 待本地运行后填写 |  |
-| T14 | Alertmanager 告警展示测试 | 待本地运行后填写 |  |
-| T15 | Docker 容器重启模拟测试 | 待本地运行后填写 |  |
-
-## 详细测试结果
-
-### T01 Docker Compose 启动测试
-
-- 操作步骤：执行 `docker compose up -d`，再执行 `docker compose ps`。
-- 实际结果：待本地运行后填写。
-- 截图：
-
-![Docker Compose PS](./images/t01-compose-ps.png)
-
-### T02 Prometheus Targets 测试
-
-- 操作步骤：访问 `http://localhost:9090/targets`。
-- 实际结果：待本地运行后填写。
-- 截图：
-
-![Prometheus Targets](./images/prometheus-targets.png)
-
-### T10 Grafana Dashboard 测试
-
-- 操作步骤：访问 `http://localhost:3000`，进入 SecureMonitor Dashboard。
-- 实际结果：待本地运行后填写。
-- 截图：
-
-![Grafana Dashboard](./images/grafana-dashboard.png)
-
-### T14 Alertmanager 告警展示测试
-
-- 操作步骤：访问 `http://localhost:9093`。
-- 实际结果：待本地运行后填写。
-- 截图：
-
-![Alertmanager](./images/alertmanager.png)
-
-## 问题记录
-
-| 编号 | 问题描述 | 影响 | 处理方式 | 状态 |
-| --- | --- | --- | --- | --- |
-| P01 | 待本地运行后填写 | 待本地运行后填写 | 待本地运行后填写 | 待本地运行后填写 |
+| T01-T15 | 原监控系统测试 | 待本地运行后填写 | Prometheus、Grafana、Alertmanager、Exporter |
+| T16 | console-backend 健康检查 | 待本地运行后填写 | `http://localhost:7000/api/health` |
+| T17 | console-frontend 页面访问 | 待本地运行后填写 | `http://localhost:7001` |
+| T18 | 总览页数据展示 | 待本地运行后填写 | SecureMonitor OS |
+| T19 | Targets 页面展示 | 待本地运行后填写 | Prometheus targets |
+| T20 | 安全中心指标展示 | 待本地运行后填写 | security_exporter |
+| T21 | 告警中心展示 | 待本地运行后填写 | Prometheus + Alertmanager |
+| T22 | 异常模拟按钮测试 | 待本地运行后填写 | 仅课程演示 |
+| T23 | Grafana 入口测试 | 待本地运行后填写 | iframe 或外链 |
 
 ## 截图占位
 
-![Prometheus Targets](./images/prometheus-targets.png)
-![Grafana Host Dashboard](./images/grafana-host-dashboard.png)
-![Grafana Container Dashboard](./images/grafana-container-dashboard.png)
-![Grafana Service Dashboard](./images/grafana-service-dashboard.png)
-![Grafana Security Dashboard](./images/grafana-security-dashboard.png)
-![Prometheus Alerts](./images/prometheus-alerts.png)
-![Alertmanager Alerts](./images/alertmanager-alerts.png)
+![SecureMonitor OS Overview](./images/securemonitor-os-overview.png)
+![SecureMonitor OS Targets](./images/securemonitor-os-targets.png)
+![SecureMonitor OS Security](./images/securemonitor-os-security.png)
+![SecureMonitor OS Alerts](./images/securemonitor-os-alerts.png)
+![SecureMonitor OS Simulation](./images/securemonitor-os-simulation.png)
+![Grafana Entry](./images/securemonitor-os-grafana.png)
+
+## 问题记录
+
+| 编号 | 问题 | 影响 | 处理方式 | 状态 |
+| --- | --- | --- | --- | --- |
+| P01 | 待本地运行后填写 | 待本地运行后填写 | 待本地运行后填写 | 待本地运行后填写 |
 
 ## 测试总结
 
-当前报告模板不包含任何编造结果。所有实际结果、截图和通过状态均需在本地运行 Docker Compose 后填写。
+当前报告不包含实际运行结果。请在本地执行 `docker compose up -d` 后补充结果和截图。

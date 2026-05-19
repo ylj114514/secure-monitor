@@ -2,39 +2,55 @@
 
 ## 项目目标
 
-本项目需要完成一个适合课程设计答辩的安全监控告警系统。系统应能在 Docker Compose 环境中本地启动，并展示 Prometheus 指标采集、Grafana 可视化、Alertmanager 告警处理和安全指标监控能力。
+SecureMonitor OS 的目标是在 Prometheus + Grafana + Alertmanager + Exporters 监控系统基础上，新增统一可视化控制台，使课程答辩时可以在一个类操作系统桌面中展示监控总览、Targets、安全指标、告警、Grafana 入口、异常模拟和 Kubernetes 研究内容。
 
-Kubernetes 部分作为扩展研究和可选实验，重点说明 Prometheus 在 Kubernetes 中的部署方式和资源指标监控方式。
+## 基础监控需求
 
-## 功能需求
+1. Docker Compose 一键启动 Prometheus、Grafana、Alertmanager 和各类 Exporter。
+2. 采集主机 CPU、内存、磁盘、网络指标。
+3. 采集 Docker 容器 CPU、内存、网络 IO 和运行状态。
+4. 使用 blackbox_exporter 探测 demo-app 可用性。
+5. 使用 security_exporter 暴露模拟安全指标。
+6. 使用 static_configs 和 file_sd_configs 实现静态/动态服务发现。
+7. 使用 Prometheus rules 和 Alertmanager 实现告警展示。
+8. 使用 Grafana Dashboard 展示主机、容器、服务和安全指标。
 
-1. 一键启动 Prometheus、Grafana、Alertmanager 和各类 Exporter。
-2. 采集本机 CPU、内存、磁盘、网络等主机性能指标。
-3. 采集 Docker 容器 CPU、内存、网络、磁盘 IO 和运行状态指标。
-4. 对 demo-app 等服务进行 HTTP 可用性探测。
-5. 暴露失败登录次数、可疑请求次数、开放端口数量、安全风险分数等模拟安全指标。
-6. 通过 Prometheus 静态服务发现和文件型动态服务发现抓取指标。
-7. 通过 Prometheus 告警规则识别性能、服务和安全异常。
-8. 通过 Alertmanager 展示告警，并预留邮件、Webhook、企业微信或钉钉通知扩展。
-9. 通过 Grafana Dashboard 展示主机、容器、服务和安全监控指标。
-10. 通过文档研究 Kubernetes 中 Node、Pod、Service、Deployment 等资源的监控方式。
+## 统一可视化控制台需求
 
-## 非功能需求
+1. 新增 console-backend，统一封装 Prometheus、Alertmanager、Grafana、security_exporter 和 demo-app。
+2. 新增 console-frontend，提供类操作系统桌面风格 UI。
+3. 顶部状态栏显示系统状态、Targets、告警和资源摘要。
+4. 左侧 Dock 提供总览、主机、容器、服务、Targets、安全、告警、Grafana、异常模拟、Kubernetes、文档入口。
+5. 主区域以窗口形式展示当前模块。
+6. 右侧通知栏展示最近告警、安全风险和服务异常。
 
-- 项目结构清晰，便于课程报告引用。
-- 配置文件尽量添加注释，便于答辩解释。
-- Docker Compose 版优先保证可运行和可截图。
-- 未运行的测试结果不能编造，必须写“待本地运行后填写”。
-- 后续每个模块应单独实现，避免一次性大规模重构。
+## console-backend 需求
 
-## 第一阶段范围
+- 使用 Python FastAPI。
+- 监听端口 `7000`。
+- 提供 `/api/health`、`/api/overview`、`/api/targets`、`/api/alerts`、`/api/security/metrics`、`/api/simulation/*`、`/api/grafana/info`、`/api/docs/links`。
+- 通过 HTTP 调用 Prometheus、Alertmanager、Grafana 和 security_exporter。
+- 不直接执行危险 Docker 控制逻辑。
 
-本阶段只完成目录结构和基础文档，包括 README、AGENTS、课程映射、需求分析和架构说明。Docker Compose、Prometheus、Grafana、Alertmanager、Exporter 和脚本仅创建占位文件，后续逐步补全。
+## console-frontend 需求
+
+- 使用 React + Vite + TypeScript。
+- 监听端口 `7001`。
+- 使用类操作系统桌面 / 安全运维驾驶舱风格。
+- 支持图表、状态卡片、告警表格、Targets 表格、异常模拟按钮和文档入口。
+
+## 安全边界
+
+- 不删除容器、镜像、文件或用户数据。
+- 不读取真实敏感信息。
+- 异常模拟只用于课程演示。
+- 服务停止/恢复操作以建议命令形式展示，不由控制台直接强制执行。
 
 ## 验收标准
 
-- 项目目录结构完整。
-- README 包含项目名称、简介、课程要求对应关系、技术栈、服务组成、总体流程、运行方式占位和答辩展示目标。
-- AGENTS 包含项目目标、课程要求、技术栈、开发规则和测试结果要求。
-- docs 中包含课程映射、需求分析和架构说明。
-- 所有未实际运行的结果均标注为“待本地运行后填写”。
+- `docker compose up -d` 可以启动原监控系统和新控制台。
+- `http://localhost:7001` 可以打开 SecureMonitor OS。
+- `http://localhost:7000/api/health` 返回健康状态。
+- 控制台能展示总览、Targets、安全指标和告警数据。
+- README 和 docs 已同步更新。
+- 未实际运行的测试结果写“待本地运行后填写”。
