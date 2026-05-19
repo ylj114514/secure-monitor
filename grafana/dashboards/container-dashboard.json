@@ -1,46 +1,71 @@
 {
   "id": null,
   "uid": "securemonitor-container",
-  "title": "SecureMonitor Container Dashboard",
-  "tags": ["secure-monitor", "container"],
+  "title": "SecureMonitor 容器监控大屏",
+  "tags": ["SecureMonitor", "容器监控", "cAdvisor"],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 3,
   "refresh": "15s",
+  "templating": {
+    "list": [
+      {
+        "type": "query",
+        "name": "container",
+        "label": "容器名称",
+        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "query": "label_values(container_memory_usage_bytes{name!=\"\"}, name)",
+        "refresh": 1,
+        "sort": 1,
+        "multi": false,
+        "includeAll": false,
+        "current": {"selected": false, "text": "secure-monitor-prometheus", "value": "secure-monitor-prometheus"}
+      }
+    ]
+  },
   "panels": [
     {
       "type": "stat",
-      "title": "cAdvisor up",
-      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "title": "cAdvisor 采集状态",
+      "description": "显示容器指标采集器是否在线。",
+      "gridPos": {"x": 0, "y": 0, "w": 24, "h": 4},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "up{job=\"cadvisor\"}"}]
+      "targets": [{"refId": "A", "expr": "up{job=\"cadvisor\"}", "legendFormat": "采集状态"}],
+      "fieldConfig": {"defaults": {"mappings": [{"options": {"0": {"text": "异常"}, "1": {"text": "正常"}}, "type": "value"}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []},
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}
     },
     {
       "type": "timeseries",
       "title": "容器 CPU 使用率",
-      "gridPos": {"x": 6, "y": 0, "w": 18, "h": 8},
+      "description": "通过顶部“容器名称”选择要观察的容器，避免多个容器曲线混杂。",
+      "gridPos": {"x": 0, "y": 4, "w": 24, "h": 8},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "rate(container_cpu_usage_seconds_total{name!=\"\"}[2m]) * 100", "legendFormat": "{{name}}"}],
-      "fieldConfig": {"defaults": {"unit": "percent"}, "overrides": []}
+      "targets": [{"refId": "A", "expr": "rate(container_cpu_usage_seconds_total{name=\"$container\"}[2m]) * 100", "legendFormat": "CPU $container"}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}
     },
     {
       "type": "timeseries",
-      "title": "容器内存使用",
-      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+      "title": "容器内存使用量",
+      "description": "展示所选容器的内存占用。",
+      "gridPos": {"x": 0, "y": 12, "w": 24, "h": 8},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "container_memory_usage_bytes{name!=\"\"}", "legendFormat": "{{name}}"}],
-      "fieldConfig": {"defaults": {"unit": "bytes"}, "overrides": []}
+      "targets": [{"refId": "A", "expr": "container_memory_usage_bytes{name=\"$container\"}", "legendFormat": "内存 $container"}],
+      "fieldConfig": {"defaults": {"unit": "bytes", "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}
     },
     {
       "type": "timeseries",
       "title": "容器网络 IO",
-      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+      "description": "展示所选容器网络接收和发送速率。",
+      "gridPos": {"x": 0, "y": 20, "w": 24, "h": 9},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
       "targets": [
-        {"refId": "A", "expr": "rate(container_network_receive_bytes_total{name!=\"\"}[2m])", "legendFormat": "rx {{name}}"},
-        {"refId": "B", "expr": "rate(container_network_transmit_bytes_total{name!=\"\"}[2m])", "legendFormat": "tx {{name}}"}
+        {"refId": "A", "expr": "rate(container_network_receive_bytes_total{name=\"$container\"}[2m])", "legendFormat": "接收 $container"},
+        {"refId": "B", "expr": "rate(container_network_transmit_bytes_total{name=\"$container\"}[2m])", "legendFormat": "发送 $container"}
       ],
-      "fieldConfig": {"defaults": {"unit": "Bps"}, "overrides": []}
+      "fieldConfig": {"defaults": {"unit": "Bps", "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}
     }
   ]
 }

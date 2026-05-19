@@ -1,11 +1,9 @@
-# SecureMonitor Docker Compose 主部署文件
+# SecureMonitor OS Docker Compose 主部署文件
 #
-# 一键启动课程设计演示所需的核心监控服务：
+# 该文件启动监控基础设施和统一可视化控制台：
 # Prometheus、Grafana、Alertmanager、node-exporter、cAdvisor、
-# blackbox-exporter、security-exporter 和 demo-app。
-#
-# Windows / Docker Desktop / WSL2 环境下，cAdvisor 和 node-exporter 的主机目录
-# 挂载能力可能受 Docker Desktop 文件共享与 Linux VM 限制影响，详见 README。
+# blackbox-exporter、security-exporter、demo-app、console-backend、
+# console-frontend。
 
 services:
   prometheus:
@@ -15,13 +13,9 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      # Prometheus 主配置文件，包含 scrape_configs、规则文件和 Alertmanager 地址。
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      # 告警规则目录，后续按主机、容器、服务、安全指标分类维护。
       - ./prometheus/rules:/etc/prometheus/rules:ro
-      # 文件型动态服务发现目录，用于演示 file_sd_configs。
       - ./prometheus/file_sd:/etc/prometheus/file_sd:ro
-      # Prometheus 时序数据持久化，避免容器重启后数据立即丢失。
       - prometheus-data:/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
@@ -46,16 +40,17 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # 课程演示环境使用默认管理员账号；生产环境应改为强密码或外部密钥。
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_USERS_DEFAULT_LANGUAGE: zh-Hans
+      GF_DATE_FORMATS_DEFAULT_TIMEZONE: Asia/Shanghai
+      # 仅用于本地课程演示的 iframe 嵌入；生产环境应重新评估认证和安全策略。
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_METRICS_ENABLED: "true"
     volumes:
-      # Grafana provisioning：自动配置数据源和 Dashboard 加载规则。
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
-      # Dashboard JSON 文件目录。
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
-      # Grafana 本地数据持久化。
       - grafana-data:/var/lib/grafana
     depends_on:
       - prometheus
@@ -69,7 +64,6 @@ services:
     ports:
       - "9093:9093"
     volumes:
-      # Alertmanager 告警路由与接收器配置。
       - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
       - alertmanager-data:/alertmanager
     command:
@@ -84,11 +78,10 @@ services:
     restart: unless-stopped
     pid: host
     volumes:
-      # 以只读方式挂载宿主机根文件系统，用于采集主机 CPU、内存、磁盘、网络等指标。
-      - /:/host:ro,rslave
+      # Docker Desktop/WSL2 下 rslave 挂载传播可能不可用，课程演示使用只读根文件系统挂载。
+      - /:/host:ro
     command:
       - "--path.rootfs=/host"
-      # 排除容器运行时和临时文件系统，减少无意义磁盘指标。
       - "--collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/.+)($|/)"
       - "--collector.filesystem.fs-types-exclude=^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$"
     networks:
@@ -102,7 +95,6 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      # cAdvisor 需要访问宿主机和 Docker 运行目录来采集容器资源指标。
       - /:/rootfs:ro
       - /var/run:/var/run:rw
       - /sys:/sys:ro
@@ -118,7 +110,6 @@ services:
     ports:
       - "9115:9115"
     volumes:
-      # blackbox_exporter 探测模块配置，后续用于 HTTP 可用性监控。
       - ./blackbox/blackbox.yml:/etc/blackbox_exporter/config.yml:ro
     command:
       - "--config.file=/etc/blackbox_exporter/config.yml"
@@ -144,6 +135,47 @@ services:
     restart: unless-stopped
     ports:
       - "5000:5000"
+    networks:
+      - secure-monitor-net
+
+  console-backend:
+    build:
+      context: ./console-backend
+      dockerfile: Dockerfile
+    container_name: secure-monitor-console-backend
+    restart: unless-stopped
+    ports:
+      - "7000:7000"
+    environment:
+      PROMETHEUS_URL: http://prometheus:9090
+      ALERTMANAGER_URL: http://alertmanager:9093
+      GRAFANA_URL: http://grafana:3000
+      GRAFANA_PUBLIC_URL: http://127.0.0.1:3000
+      SECURITY_EXPORTER_URL: http://security-exporter:8000
+      DEMO_APP_URL: http://demo-app:5000
+    depends_on:
+      - prometheus
+      - alertmanager
+      - grafana
+      - security-exporter
+      - demo-app
+    networks:
+      - secure-monitor-net
+
+  console-frontend:
+    build:
+      context: ./console-frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://127.0.0.1:7000
+    container_name: secure-monitor-console-frontend
+    restart: unless-stopped
+    ports:
+      - "7001:7001"
+    environment:
+      VITE_API_BASE_URL: http://127.0.0.1:7000
+    depends_on:
+      - console-backend
     networks:
       - secure-monitor-net
 

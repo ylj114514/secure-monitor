@@ -67,3 +67,9 @@ Grafana 主要负责图表可视化；SecureMonitor OS 负责整合入口、总�
 ### 这个系统如何扩展到生产环境？
 
 需要增加登录认证、HTTPS、权限控制、审计日志、真实通知渠道、更多安全数据源和 Kubernetes 实际部署验证。
+
+### 为什么前端没有直接展示原始 JSON？
+
+本项目没有直接把 Prometheus、Alertmanager、Grafana 的原始 JSON 返回值展示给用户，而是在前端进行了数据模型转换和可视化封装。系统将 targets、alerts、security metrics、dashboard JSON、Kubernetes YAML 等复杂数据转换为卡片、表格、状态标签、中文说明和折叠详情，使非专业用户也能理解监控对象、告警状态和安全风险。
+
+在演示时，我会优先展示人类可读的总览页、Targets 表格、告警中心和安全中心。如果老师需要看原始接口数据，可以展开“开发者详情”，但默认界面不会把 JSON/YAML 当作主要内容。

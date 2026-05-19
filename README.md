@@ -115,3 +115,28 @@ http://localhost:3000
 ## 测试说明
 
 测试计划见 `docs/08_test_plan.md`，测试报告模板见 `docs/09_test_report.md`。不要编造测试结果，未运行内容填写“待本地运行后填写”。
+
+## SecureMonitor OS 展示优化说明
+
+SecureMonitor OS 前端不把 Prometheus、Alertmanager、Grafana Dashboard 或 Kubernetes YAML 的原始返回值直接作为主界面内容展示。系统会先把复杂 API 数据转换为面向答辩展示的视图模型，再使用卡片、表格、状态标签、进度条、中文说明和折叠详情展示。
+
+- Targets 页面将 Prometheus targets 转换为任务名称、实例地址、健康状态、最近抓取时间、抓取地址和标签表格。
+- 告警中心将 Prometheus / Alertmanager 告警转换为严重等级、当前状态、来源、触发时间、摘要和描述。
+- 安全中心将 security_exporter 指标转换为安全指标卡片和风险等级。
+- Grafana 页面将 Dashboard 信息转换为仪表盘卡片和面板说明。
+- Kubernetes 研究页将 YAML 示例转换为资源说明卡片。
+- Raw JSON / Raw YAML 仅保留在“开发者详情 / 查看原始数据”折叠区域中，默认收起。
+
+该设计适合课程答辩截图：老师可以先看到人类可读的监控对象、告警状态和安全风险说明；需要排查时再展开原始数据。
+
+## 本地运行验证记录
+
+2026-05-19 已在本机 Docker Desktop 环境执行：
+
+```bash
+docker compose build console-frontend
+docker compose up -d console-frontend
+docker compose ps
+```
+
+验证结果：SecureMonitor OS 前端容器、console-backend、Prometheus、Grafana、Alertmanager、node-exporter、cAdvisor、blackbox-exporter、security-exporter、demo-app 均处于 Up 状态。浏览器抽查总览、Targets、告警中心、安全中心、Grafana、异常模拟、Kubernetes、项目文档页面，主界面未默认展示大面积 Raw JSON / Raw YAML。

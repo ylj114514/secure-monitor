@@ -1,48 +1,60 @@
 {
   "id": null,
   "uid": "securemonitor-service",
-  "title": "SecureMonitor Service Dashboard",
-  "tags": ["secure-monitor", "service"],
+  "title": "SecureMonitor 服务探测大屏",
+  "tags": ["SecureMonitor", "服务探测", "blackbox_exporter"],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 3,
   "refresh": "15s",
   "panels": [
     {
       "type": "stat",
-      "title": "demo-app up",
-      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "title": "demo-app 服务状态",
+      "description": "显示 demo-app 是否被 Prometheus 正常采集。",
+      "gridPos": {"x": 0, "y": 0, "w": 24, "h": 4},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "up{job=\"dynamic-file-sd\", instance=\"demo-app:5000\"}"}]
+      "targets": [{"refId": "A", "expr": "up{job=\"dynamic-file-sd\", instance=\"demo-app:5000\"}", "legendFormat": "demo-app 状态"}],
+      "fieldConfig": {"defaults": {"mappings": [{"options": {"0": {"text": "异常"}, "1": {"text": "正常"}}, "type": "value"}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []},
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}
     },
     {
       "type": "stat",
-      "title": "probe_success",
-      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+      "title": "HTTP 探测是否成功",
+      "description": "blackbox_exporter 探测结果，1 表示成功，0 表示失败。",
+      "gridPos": {"x": 0, "y": 4, "w": 24, "h": 4},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "probe_success"}]
+      "targets": [{"refId": "A", "expr": "probe_success", "legendFormat": "探测结果"}],
+      "fieldConfig": {"defaults": {"mappings": [{"options": {"0": {"text": "失败"}, "1": {"text": "成功"}}, "type": "value"}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []},
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}
     },
     {
       "type": "timeseries",
-      "title": "probe_duration_seconds",
-      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+      "title": "HTTP 探测耗时",
+      "description": "展示 blackbox_exporter 对 demo-app /health 接口的探测耗时。",
+      "gridPos": {"x": 0, "y": 8, "w": 24, "h": 8},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "probe_duration_seconds"}],
-      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []}
+      "targets": [{"refId": "A", "expr": "probe_duration_seconds", "legendFormat": "探测耗时"}],
+      "fieldConfig": {"defaults": {"unit": "s", "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}
     },
     {
       "type": "timeseries",
       "title": "HTTP 请求总数",
-      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+      "description": "展示 demo-app 在最近 5 分钟内的请求增长情况。",
+      "gridPos": {"x": 0, "y": 16, "w": 24, "h": 8},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "increase(demo_http_requests_total[5m])", "legendFormat": "{{path}} {{status}}"}]
+      "targets": [{"refId": "A", "expr": "increase(demo_http_requests_total[5m])", "legendFormat": "{{path}} {{status}}"}],
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}
     },
     {
       "type": "timeseries",
-      "title": "错误请求数",
-      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+      "title": "HTTP 错误请求数",
+      "description": "展示 demo-app 5xx 错误请求增长，用于服务异常演示。",
+      "gridPos": {"x": 0, "y": 24, "w": 24, "h": 8},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "increase(demo_http_requests_total{status=~\"5..\"}[5m])", "legendFormat": "{{path}} {{status}}"}]
+      "targets": [{"refId": "A", "expr": "increase(demo_http_requests_total{status=~\"5..\"}[5m])", "legendFormat": "{{path}} {{status}}"}],
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}
     }
   ]
 }

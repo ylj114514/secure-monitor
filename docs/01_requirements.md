@@ -54,3 +54,15 @@ SecureMonitor OS 的目标是在 Prometheus + Grafana + Alertmanager + Exporters
 - 控制台能展示总览、Targets、安全指标和告警数据。
 - README 和 docs 已同步更新。
 - 未实际运行的测试结果写“待本地运行后填写”。
+
+## 前端人性化展示需求
+
+SecureMonitor OS 前端需要避免把 Prometheus、Alertmanager、Grafana 或 Kubernetes 的原始 JSON/YAML 直接展示给普通用户。主界面应完成数据归一化和中文化展示：
+
+1. Targets 使用表格、健康状态 Badge、标签组和详情弹窗展示。
+2. Alerts 使用统计卡片、告警表格、严重等级颜色和中文状态展示。
+3. security_exporter 指标使用安全指标卡片、风险说明和风险分数仪表展示。
+4. Grafana Dashboard 信息使用仪表盘卡片和面板列表展示。
+5. Kubernetes YAML 示例使用 Deployment、Service、ServiceMonitor、PodMonitor 资源说明卡片展示。
+6. Raw JSON / Raw YAML 只允许放在“开发者详情”折叠区域，默认收起。
+7. 无数据和接口错误需要有 EmptyState / ErrorState，不允许页面空白。

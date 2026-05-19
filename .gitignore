@@ -17,3 +17,7 @@ data/
 Thumbs.db
 .idea/
 .vscode/
+
+# Node frontend dependencies and build outputs
+node_modules/
+dist/

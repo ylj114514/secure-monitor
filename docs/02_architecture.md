@@ -84,3 +84,17 @@ console-backend 是统一 API 网关：
 ## 验证说明
 
 本次未实际运行 `docker compose up -d`，需要本地启动后验证控制台、Prometheus、Grafana、Alertmanager 和模拟功能。
+
+## 前端数据展示架构
+
+console-frontend 不直接把后端返回的原始 API 数据渲染到主界面，而是在前端增加展示模型转换层：
+
+```text
+Prometheus / Alertmanager / Grafana / Kubernetes 原始数据
+        -> normalizers.ts 归一化
+        -> 中文字段映射 fieldNameMap.ts
+        -> MetricCard / TargetTable / AlertTable / InfoCard
+        -> RawDataDrawer 折叠保留原始数据
+```
+
+这种结构把“机器可读数据”和“答辩可读界面”分离。主界面展示卡片、表格、状态标签和中文说明；原始 JSON/YAML 仅作为开发者详情保留，便于排查但不会影响课程展示效果。

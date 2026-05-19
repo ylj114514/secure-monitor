@@ -1,59 +1,66 @@
 {
   "id": null,
   "uid": "securemonitor-security",
-  "title": "SecureMonitor Security Dashboard",
-  "tags": ["secure-monitor", "security"],
+  "title": "SecureMonitor 安全监控大屏",
+  "tags": ["SecureMonitor", "安全监控", "security_exporter"],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 3,
   "refresh": "15s",
   "panels": [
     {
       "type": "stat",
       "title": "失败登录次数",
-      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "description": "模拟失败登录次数，用于暴力破解类安全告警演示。",
+      "gridPos": {"x": 0, "y": 0, "w": 24, "h": 4},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "security_failed_login_total"}]
+      "targets": [{"refId": "A", "expr": "security_failed_login_total", "legendFormat": "失败登录"}]
     },
     {
       "type": "stat",
       "title": "可疑请求次数",
-      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+      "description": "模拟异常访问、扫描或攻击尝试次数。",
+      "gridPos": {"x": 0, "y": 4, "w": 24, "h": 4},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "security_suspicious_request_total"}]
+      "targets": [{"refId": "A", "expr": "security_suspicious_request_total", "legendFormat": "可疑请求"}]
     },
     {
       "type": "stat",
       "title": "开放端口数量",
-      "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
+      "description": "模拟开放端口数量，开放端口过多会增加攻击面。",
+      "gridPos": {"x": 0, "y": 8, "w": 24, "h": 4},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "security_open_port_count"}]
+      "targets": [{"refId": "A", "expr": "security_open_port_count", "legendFormat": "开放端口"}]
     },
     {
       "type": "stat",
       "title": "高 CPU 进程数量",
-      "gridPos": {"x": 18, "y": 0, "w": 6, "h": 4},
+      "description": "模拟高 CPU 进程数量，用于资源消耗攻击场景演示。",
+      "gridPos": {"x": 0, "y": 12, "w": 24, "h": 4},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "security_high_cpu_process_count"}]
+      "targets": [{"refId": "A", "expr": "security_high_cpu_process_count", "legendFormat": "高 CPU 进程"}]
     },
     {
       "type": "gauge",
       "title": "安全风险分数",
-      "gridPos": {"x": 0, "y": 4, "w": 12, "h": 8},
+      "description": "综合风险分数，0-30 低风险，31-70 中风险，71-100 高风险。",
+      "gridPos": {"x": 0, "y": 16, "w": 24, "h": 8},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "security_risk_score"}],
-      "fieldConfig": {"defaults": {"unit": "none", "min": 0, "max": 100}, "overrides": []}
+      "targets": [{"refId": "A", "expr": "security_risk_score", "legendFormat": "安全风险分数"}],
+      "fieldConfig": {"defaults": {"unit": "none", "min": 0, "max": 100, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 31}, {"color": "red", "value": 71}]}}, "overrides": []}
     },
     {
       "type": "timeseries",
       "title": "安全事件趋势",
-      "gridPos": {"x": 12, "y": 4, "w": 12, "h": 8},
+      "description": "展示最近 5 分钟内的失败登录、可疑请求和容器重启增长。",
+      "gridPos": {"x": 0, "y": 24, "w": 24, "h": 9},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
       "targets": [
-        {"refId": "A", "expr": "increase(security_failed_login_total[5m])", "legendFormat": "failed login"},
-        {"refId": "B", "expr": "increase(security_suspicious_request_total[5m])", "legendFormat": "suspicious request"},
-        {"refId": "C", "expr": "increase(security_container_restart_total[5m])", "legendFormat": "container restart"}
-      ]
+        {"refId": "A", "expr": "increase(security_failed_login_total[5m])", "legendFormat": "失败登录"},
+        {"refId": "B", "expr": "increase(security_suspicious_request_total[5m])", "legendFormat": "可疑请求"},
+        {"refId": "C", "expr": "increase(security_container_restart_total[5m])", "legendFormat": "容器重启"}
+      ],
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}
     }
   ]
 }

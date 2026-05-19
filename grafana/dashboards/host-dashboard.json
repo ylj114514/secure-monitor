@@ -1,54 +1,119 @@
 {
   "id": null,
   "uid": "securemonitor-host",
-  "title": "SecureMonitor Host Dashboard",
-  "tags": ["secure-monitor", "host"],
+  "title": "SecureMonitor 主机监控大屏",
+  "tags": ["SecureMonitor", "主机监控", "node_exporter"],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 3,
   "refresh": "15s",
+  "templating": {
+    "list": [
+      {
+        "type": "query",
+        "name": "instance",
+        "label": "主机实例",
+        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "query": "label_values(up{job=\"node-exporter\"}, instance)",
+        "refresh": 1,
+        "sort": 1,
+        "multi": false,
+        "includeAll": false,
+        "current": {"selected": false, "text": "node-exporter:9100", "value": "node-exporter:9100"}
+      },
+      {
+        "type": "query",
+        "name": "mountpoint",
+        "label": "磁盘挂载点",
+        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "query": "label_values(node_filesystem_size_bytes{instance=\"$instance\",fstype!~\"tmpfs|overlay|squashfs|nsfs|proc|sysfs|devtmpfs\"}, mountpoint)",
+        "refresh": 1,
+        "sort": 1,
+        "multi": false,
+        "includeAll": false,
+        "current": {"selected": false, "text": "/", "value": "/"}
+      },
+      {
+        "type": "query",
+        "name": "device",
+        "label": "网卡设备",
+        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "query": "label_values(node_network_receive_bytes_total{instance=\"$instance\",device!=\"lo\"}, device)",
+        "refresh": 1,
+        "sort": 1,
+        "multi": false,
+        "includeAll": false,
+        "current": {"selected": false, "text": "eth0", "value": "eth0"}
+      }
+    ]
+  },
   "panels": [
     {
       "type": "stat",
-      "title": "node-exporter up",
-      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "title": "node_exporter 采集状态",
+      "description": "显示主机指标采集器是否在线，1 表示正常，0 表示异常。",
+      "gridPos": {"x": 0, "y": 0, "w": 24, "h": 4},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "up{job=\"node-exporter\"}"}]
+      "targets": [{"refId": "A", "expr": "up{job=\"node-exporter\", instance=\"$instance\"}", "legendFormat": "采集状态"}],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {"options": {"0": {"text": "异常"}, "1": {"text": "正常"}}, "type": "value"}
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "red", "value": null},
+              {"color": "green", "value": 1}
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}
     },
     {
       "type": "timeseries",
       "title": "CPU 使用率",
-      "gridPos": {"x": 6, "y": 0, "w": 18, "h": 8},
+      "description": "展示当前主机 CPU 忙碌程度。该面板只展示所选主机实例，避免多实例曲线混杂。",
+      "gridPos": {"x": 0, "y": 4, "w": 24, "h": 8},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[2m])) * 100)"}],
-      "fieldConfig": {"defaults": {"unit": "percent"}, "overrides": []}
+      "targets": [{"refId": "A", "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{instance=\"$instance\",mode=\"idle\"}[2m])) * 100)", "legendFormat": "CPU 使用率"}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}
     },
     {
       "type": "timeseries",
       "title": "内存使用率",
-      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+      "description": "展示主机内存使用比例。",
+      "gridPos": {"x": 0, "y": 12, "w": 24, "h": 8},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100"}],
-      "fieldConfig": {"defaults": {"unit": "percent"}, "overrides": []}
+      "targets": [{"refId": "A", "expr": "(1 - (node_memory_MemAvailable_bytes{instance=\"$instance\"} / node_memory_MemTotal_bytes{instance=\"$instance\"})) * 100", "legendFormat": "内存使用率"}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}
     },
     {
       "type": "timeseries",
       "title": "磁盘使用率",
-      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+      "description": "通过顶部“磁盘挂载点”下拉框选择要展示的挂载点，避免一次性显示大量磁盘曲线。",
+      "gridPos": {"x": 0, "y": 20, "w": 24, "h": 8},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "(1 - (node_filesystem_avail_bytes{fstype!~\"tmpfs|overlay|squashfs\"} / node_filesystem_size_bytes{fstype!~\"tmpfs|overlay|squashfs\"})) * 100"}],
-      "fieldConfig": {"defaults": {"unit": "percent"}, "overrides": []}
+      "targets": [{"refId": "A", "expr": "(1 - (node_filesystem_avail_bytes{instance=\"$instance\",mountpoint=\"$mountpoint\",fstype!~\"tmpfs|overlay|squashfs|nsfs|proc|sysfs|devtmpfs\"} / node_filesystem_size_bytes{instance=\"$instance\",mountpoint=\"$mountpoint\",fstype!~\"tmpfs|overlay|squashfs|nsfs|proc|sysfs|devtmpfs\"})) * 100", "legendFormat": "磁盘使用率 $mountpoint"}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}
     },
     {
       "type": "timeseries",
-      "title": "网络收发",
-      "gridPos": {"x": 0, "y": 16, "w": 24, "h": 8},
+      "title": "网络收发速率",
+      "description": "通过顶部“网卡设备”下拉框选择网卡，只展示该网卡的接收和发送速率。",
+      "gridPos": {"x": 0, "y": 28, "w": 24, "h": 9},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
       "targets": [
-        {"refId": "A", "expr": "rate(node_network_receive_bytes_total{device!=\"lo\"}[2m])", "legendFormat": "receive {{device}}"},
-        {"refId": "B", "expr": "rate(node_network_transmit_bytes_total{device!=\"lo\"}[2m])", "legendFormat": "transmit {{device}}"}
+        {"refId": "A", "expr": "rate(node_network_receive_bytes_total{instance=\"$instance\",device=\"$device\"}[2m])", "legendFormat": "接收 $device"},
+        {"refId": "B", "expr": "rate(node_network_transmit_bytes_total{instance=\"$instance\",device=\"$device\"}[2m])", "legendFormat": "发送 $device"}
       ],
-      "fieldConfig": {"defaults": {"unit": "Bps"}, "overrides": []}
+      "fieldConfig": {"defaults": {"unit": "Bps", "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}
     }
   ]
 }
