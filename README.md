@@ -60,19 +60,28 @@ http://127.0.0.1:7001
 
 ## 4. 服务组成
 
-| 服务 | 地址 | 展示定位 | 作用 |
-| --- | --- | --- | --- |
-| SecureMonitor OS Console | http://127.0.0.1:7001 | 主前端界面 | 统一可视化控制台，答辩主要展示页面 |
-| console-backend | http://127.0.0.1:7000/api/health | 后端 API | 封装 Prometheus、Alertmanager、Grafana、Exporter API |
-| Prometheus | http://127.0.0.1:9090 | 验证入口 | 指标采集、PromQL 查询、Targets、Alerts |
-| Grafana | http://127.0.0.1:3000 | Dashboard 入口 | Dashboard 可视化，默认账号 `admin/admin` |
-| Alertmanager | http://127.0.0.1:9093 | 告警验证入口 | 告警分组、去重、路由和展示 |
-| cAdvisor | http://127.0.0.1:8080 | 容器指标入口 | Docker 容器 CPU、内存、网络、磁盘 IO 指标 |
-| blackbox_exporter | http://127.0.0.1:9115 | 探测入口 | HTTP/TCP 服务可用性探测 |
-| security_exporter | http://127.0.0.1:8000/metrics | 安全指标入口 | 自定义模拟安全指标 |
-| demo-app | http://127.0.0.1:5000 | 被监控服务 | 用于服务可用性、HTTP 指标和异常接口演示 |
+本项目答辩展示时只需要打开一个主要界面：
 
-如果 `localhost` 访问异常，优先使用 `127.0.0.1`。
+```text
+http://127.0.0.1:7001
+```
+
+也就是 SecureMonitor OS Console。下面表格只说明各服务在系统中的职责，不再把每个组件的原生访问地址都放在“服务组成”中，避免把项目展示成多个分散页面。
+
+| 服务 | 展示方式 | 作用 |
+| --- | --- | --- |
+| SecureMonitor OS Console | 主界面直接访问 `http://127.0.0.1:7001` | 统一可视化控制台，答辩主要展示页面 |
+| console-backend | 由主界面自动调用 | 封装 Prometheus、Alertmanager、Grafana、Exporter API |
+| Prometheus | 通过主界面的总览、Targets、告警中心间接展示 | 指标采集、PromQL 查询、Targets、Alerts 和告警规则 |
+| Grafana | 通过主界面的 Grafana 入口打开 Dashboard | Dashboard 可视化，默认账号 `admin/admin` |
+| Alertmanager | 通过主界面的告警中心展示 | 告警分组、去重、路由和展示 |
+| node_exporter | 通过主界面的主机监控展示 | 本机 CPU、内存、磁盘、网络等物理节点指标 |
+| cAdvisor | 通过主界面的容器监控展示 | Docker 容器 CPU、内存、网络、磁盘 IO 指标 |
+| blackbox_exporter | 通过主界面的服务探测展示 | HTTP/TCP 服务可用性探测 |
+| security_exporter | 通过主界面的安全中心展示 | 自定义模拟安全指标 |
+| demo-app | 通过主界面的服务探测和异常模拟展示 | 被监控测试服务，用于服务可用性、HTTP 指标和异常接口演示 |
+
+如果 `localhost` 访问异常，主界面优先使用 `127.0.0.1:7001`。
 
 ## 5. 项目总体流程
 
