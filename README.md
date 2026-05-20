@@ -1179,6 +1179,7 @@ docker compose up -d --build
 | `docs/09_test_report.md` | 测试报告模板 |
 | `docs/10_defense_script.md` | 答辩稿和老师可能提问 |
 | `docs/course_report_outline.md` | 课程设计报告大纲 |
+| `docs/report_format_reference.md` | 课程报告参考样例格式总结 |
 
 ## 18. 答辩可以强调的亮点
 
