@@ -717,6 +717,264 @@ http://127.0.0.1:9093
 | T27 | Kubernetes 示例文件检查 | 查看 `k8s/` YAML，必要时执行 dry-run | 示例结构完整 | `docs/images/t27-k8s-yaml-check.png` |
 | T28 | 日志排查测试 | 执行 `docker compose logs prometheus grafana console-backend` | 日志可用于定位问题 | `docs/images/t28-compose-logs.png` |
 
+### 12.1 测试前准备
+
+正式测试前先完成以下准备，保证后续每个测试用例都在同一环境下执行：
+
+```powershell
+cd C:\Users\52697\secure-monitor
+docker compose down
+docker compose up -d --build
+docker compose ps
+```
+
+观察点：
+
+- `docker compose ps` 中主要服务应处于运行状态。
+- 如果某个服务没有启动，先执行 `docker compose logs 服务名` 查看原因。
+- 截图时建议保留浏览器地址栏和页面标题，便于放入测试报告。
+- 没有实际运行时，测试报告中的实际结果继续填写“待本地运行后填写”。
+
+### 12.2 T01-T03 基础启动与主界面测试方法
+
+T01 Docker Compose 启动测试：
+
+1. 在 PowerShell 中进入项目目录。
+2. 执行 `docker compose up -d --build`。
+3. 执行 `docker compose ps`。
+4. 检查 Prometheus、Grafana、Alertmanager、node-exporter、cadvisor、blackbox-exporter、security-exporter、demo-app、console-backend、console-frontend 是否启动。
+5. 截图保存到 `docs/images/t01-compose-ps.png`。
+
+T02 SecureMonitor OS 主界面访问：
+
+1. 打开浏览器访问 `http://127.0.0.1:7001`。
+2. 检查是否显示 SecureMonitor OS 顶部状态栏、左侧功能按钮和中间总览内容。
+3. 重点观察 Prometheus、Grafana、Alertmanager 状态标签是否显示。
+4. 截图保存到 `docs/images/t02-console-overview.png`。
+
+T03 console-backend 健康检查：
+
+1. 打开 `http://127.0.0.1:7000/api/health`。
+2. 观察浏览器返回内容是否表示后端服务健康。
+3. 如果打不开，执行 `docker compose logs console-backend` 排查。
+4. 截图保存到 `docs/images/t03-backend-health.png`。
+
+### 12.3 T04-T06 Prometheus 服务发现测试方法
+
+T04 Prometheus Targets 测试：
+
+1. 在 SecureMonitor OS 主界面点击左侧 `Targets`。
+2. 查看表格中的 Job、Instance、Health、Last Scrape、Scrape URL。
+3. 可选打开 Prometheus 原生验证页面 `http://127.0.0.1:9090/targets`。
+4. 预期能够看到多个 target，并能区分正常和异常状态。
+5. 截图保存到 `docs/images/t04-prometheus-targets.png`。
+
+T05 静态服务发现测试：
+
+1. 在 Targets 页面搜索或查找 `prometheus`、`node-exporter`、`cadvisor`、`alertmanager`、`blackbox-exporter`。
+2. 这些目标来自 `prometheus/prometheus.yml` 中的 `static_configs`。
+3. 如果目标不存在，检查 `prometheus/prometheus.yml` 中对应 job 是否配置。
+4. 截图保存到 `docs/images/t05-static-targets.png`。
+
+T06 动态服务发现测试：
+
+1. 在 Targets 页面搜索或查找 `security-exporter` 和 `demo-app`。
+2. 这两个目标来自 `prometheus/file_sd/targets.json`。
+3. 修改 file_sd 文件后，Prometheus 应在 `refresh_interval` 后重新读取目标。
+4. 截图保存到 `docs/images/t06-file-sd-targets.png`。
+
+### 12.4 T07-T10 指标采集测试方法
+
+T07 主机指标测试：
+
+1. 在 SecureMonitor OS 主界面点击 `主机监控`。
+2. 查看 CPU、内存、磁盘和网络摘要。
+3. 可在 Prometheus 查询 `up{job="node-exporter"}` 或 `node_cpu_seconds_total`。
+4. 预期能看到主机性能指标。
+5. 截图保存到 `docs/images/t07-host-dashboard.png`。
+
+T08 容器指标测试：
+
+1. 点击左侧 `容器监控`。
+2. 查看容器 CPU、内存、网络 IO 和 cAdvisor 状态。
+3. 可在 Prometheus 查询 `up{job="cadvisor"}` 或 `container_memory_usage_bytes`。
+4. 预期能看到 Docker 容器资源指标。
+5. 截图保存到 `docs/images/t08-container-dashboard.png`。
+
+T09 服务探测测试：
+
+1. 点击左侧 `服务探测`。
+2. 查看 demo-app 状态、`probe_success` 和 `probe_duration_seconds`。
+3. 可在 Prometheus 查询 `probe_success`。
+4. 预期 demo-app 健康接口能被 blackbox_exporter 探测。
+5. 截图保存到 `docs/images/t09-blackbox.png`。
+
+T10 security_exporter 指标测试：
+
+1. 点击左侧 `安全中心`。
+2. 查看失败登录次数、可疑请求次数、开放端口数量、容器重启次数、高 CPU 进程数量、安全风险分数。
+3. 可打开 `http://127.0.0.1:8000/metrics` 查看原始指标。
+4. 预期安全指标能够被页面展示，也能够被 Prometheus 查询。
+5. 截图保存到 `docs/images/t10-security-metrics.png`。
+
+### 12.5 T11-T12 Grafana 测试方法
+
+T11 Grafana 数据源测试：
+
+1. 打开 SecureMonitor OS 左侧 `Grafana` 页面。
+2. 点击打开 Grafana 的按钮。
+3. 使用 `admin/admin` 登录。
+4. 进入 Grafana 数据源页面，查看是否存在 Prometheus 数据源。
+5. 数据源 URL 应为 Docker 网络内的 `http://prometheus:9090`。
+6. 截图保存到 `docs/images/t11-grafana-datasource.png`。
+
+T12 Grafana Dashboard 测试：
+
+1. 在 Grafana 中打开 Dashboards。
+2. 查看主机、容器、服务、安全四类 Dashboard 是否存在。
+3. 打开其中一个 Dashboard，确认图表面板可以显示。
+4. 如果无数据，先确认 Prometheus Targets 是否正常。
+5. 截图保存到 `docs/images/t12-grafana-dashboard.png`。
+
+### 12.6 T13-T16 异常模拟与停止测试方法
+
+T13 失败登录模拟测试：
+
+1. 打开 SecureMonitor OS 左侧 `异常模拟`。
+2. 点击失败登录模拟按钮。
+3. 或执行 `python .\scripts\simulate_failed_login.py 20`。
+4. 返回 `安全中心` 查看 `security_failed_login_total` 是否增加。
+5. 截图保存到 `docs/images/t13-failed-login.png`。
+
+T14 安全风险告警测试：
+
+1. 在 `异常模拟` 页面点击设置风险分数为 90。
+2. 或执行 `python .\scripts\simulate_security_risk.py 90`。
+3. 返回 `安全中心` 查看安全风险分数是否变为高风险。
+4. 打开 `告警中心` 观察是否出现 `HighSecurityRiskScore`。
+5. 截图保存到 `docs/images/t14-risk-alert.png`。
+
+T15 Alertmanager 展示测试：
+
+1. 打开 SecureMonitor OS 左侧 `告警中心`。
+2. 查看告警名称、等级、状态、触发时间、摘要和描述。
+3. 可选打开 `http://127.0.0.1:9093` 验证 Alertmanager 原生页面。
+4. 截图保存到 `docs/images/t15-alertmanager.png`。
+
+T16 停止服务测试：
+
+1. 执行 `docker compose down`。
+2. 执行 `docker compose ps`。
+3. 确认容器已停止，端口释放。
+4. 截图保存到 `docs/images/t16-compose-down.png`。
+
+### 12.7 T17-T20 后端 API 与前端过滤测试方法
+
+T17 Overview API 测试：
+
+1. 打开 `http://127.0.0.1:7000/api/overview`。
+2. 检查返回内容是否包含系统状态、Targets 总数、在线 Targets、活跃告警、CPU、内存、磁盘、安全风险分数等字段。
+3. 如果返回错误，检查 Prometheus、Grafana、Alertmanager 是否启动。
+4. 截图保存到 `docs/images/t17-overview-api.png`。
+
+T18 Prometheus 查询 API 测试：
+
+1. 打开 `http://127.0.0.1:7000/api/prometheus/query?query=up`。
+2. 检查返回内容是否包含 Prometheus 查询结果。
+3. 重点观察 `up` 指标是否能反映 target 在线状态。
+4. 截图保存到 `docs/images/t18-prometheus-query-api.png`。
+
+T19 Targets 搜索过滤测试：
+
+1. 打开主界面 `Targets` 页面。
+2. 先选择 `全部`，观察所有 target。
+3. 再选择 `正常` 或 `异常`，观察表格是否过滤。
+4. 在搜索框输入 `node-exporter`、`cadvisor` 或 `demo-app`。
+5. 预期表格只显示符合搜索和过滤条件的目标。
+6. 截图保存到 `docs/images/t19-targets-filter.png`。
+
+T20 Alerts 聚合 API 测试：
+
+1. 打开 `http://127.0.0.1:7000/api/alerts`。
+2. 检查是否返回告警统计字段，例如 active、critical、warning。
+3. 如果已经触发模拟告警，应能看到告警列表。
+4. 截图保存到 `docs/images/t20-alerts-api.png`。
+
+### 12.8 T21-T24 应用接口、blackbox 和告警配置测试方法
+
+T21 demo-app 接口测试：
+
+1. 打开 `http://127.0.0.1:5000/health`，预期返回健康状态。
+2. 打开 `http://127.0.0.1:5000/metrics`，预期返回 Prometheus 文本格式指标。
+3. 打开 `http://127.0.0.1:5000/api/hello`，预期返回正常业务响应。
+4. 打开 `http://127.0.0.1:5000/api/error`，预期返回 500，用于错误请求演示。
+5. 打开 `http://127.0.0.1:5000/api/slow`，预期延迟 1-3 秒返回。
+6. 截图保存到 `docs/images/t21-demo-app-apis.png`。
+
+T22 blackbox 直接探测测试：
+
+1. 打开 `http://127.0.0.1:9115/probe?target=http://demo-app:5000/health&module=http_2xx`。
+2. 查看返回内容中是否包含 `probe_success` 和 `probe_duration_seconds`。
+3. 注意这里的 `demo-app` 是 Docker 网络内服务名，如果从宿主机直接探测失败，可通过 Prometheus 中的 blackbox job 验证。
+4. 截图保存到 `docs/images/t22-blackbox-direct.png`。
+
+T23 Prometheus 告警规则加载测试：
+
+1. 打开 `http://127.0.0.1:9090/rules`。
+2. 查看 host、container、service、security 四类规则是否存在。
+3. 也可以打开 `http://127.0.0.1:9090/alerts` 查看告警状态。
+4. 如果规则没有加载，检查 `prometheus/rules/*.yml` 和 `prometheus/prometheus.yml` 的 `rule_files`。
+5. 截图保存到 `docs/images/t23-prometheus-rules.png`。
+
+T24 Alertmanager 路由配置测试：
+
+1. 打开 `http://127.0.0.1:9093/#/status`。
+2. 查看 route、receiver、group_by、group_wait、group_interval、repeat_interval 等配置。
+3. 检查 default、critical、warning receiver 是否存在。
+4. 截图保存到 `docs/images/t24-alertmanager-route.png`。
+
+### 12.9 T25-T28 扩展验证测试方法
+
+T25 Grafana provisioning 测试：
+
+1. 执行 `docker compose restart grafana`。
+2. 等待 Grafana 重启完成。
+3. 打开 Grafana Dashboard 列表。
+4. 确认主机、容器、服务、安全 Dashboard 仍然自动存在。
+5. 这说明 `grafana/provisioning` 和 `grafana/dashboards` 挂载生效。
+6. 截图保存到 `docs/images/t25-grafana-provisioning.png`。
+
+T26 安全风险阈值边界测试：
+
+1. 执行 `python .\scripts\simulate_security_risk.py 30`，观察安全中心风险等级。
+2. 执行 `python .\scripts\simulate_security_risk.py 70`，观察风险等级变化。
+3. 执行 `python .\scripts\simulate_security_risk.py 90`，观察是否进入高风险。
+4. 打开告警中心，观察高风险分数是否可能触发告警。
+5. 截图保存到 `docs/images/t26-risk-threshold.png`。
+
+T27 Kubernetes 示例文件检查：
+
+1. 查看 `k8s/kind-config.yaml`、`k8s/demo-app-deployment.yaml`、`k8s/demo-app-service.yaml`、`k8s/service-monitor.yaml`。
+2. 检查 Deployment 是否包含镜像、端口、labels。
+3. 检查 Service 是否包含 selector 和 ports。
+4. 检查 ServiceMonitor 是否包含 selector、endpoints、interval、path。
+5. 如果本地有 Kubernetes 环境，可执行 `kubectl apply --dry-run=client -f k8s/` 做语法检查。
+6. 截图保存到 `docs/images/t27-k8s-yaml-check.png`。
+
+T28 日志排查测试：
+
+1. 执行以下命令：
+
+```powershell
+docker compose logs prometheus
+docker compose logs grafana
+docker compose logs console-backend
+```
+
+2. 检查是否存在明显配置错误、连接失败、启动失败等信息。
+3. 如果发现错误，把错误内容和处理方式写入 `docs/09_test_report.md` 的问题记录。
+4. 截图保存到 `docs/images/t28-compose-logs.png`。
+
 测试记录填写原则：
 
 - 没有实际运行前，实际结果写“待本地运行后填写”。
