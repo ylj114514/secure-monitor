@@ -61,6 +61,19 @@ docker compose ps
 | T21 | 告警中心展示 | 告警统计、筛选和列表正常展示 | 待本地运行后填写 | 待填写 | `docs/images/os-alerts.png` |
 | T22 | 异常模拟按钮测试 | 模拟接口可调用，页面显示结果说明 | 待本地运行后填写 | 待填写 | `docs/images/os-simulation.png` |
 | T23 | Grafana 入口测试 | SecureMonitor OS 可跳转到 Grafana Dashboard | 待本地运行后填写 | 待填写 | `docs/images/os-grafana.png` |
+| T24 | Overview API 测试 | `/api/overview` 返回总览状态、资源摘要和安全风险字段 | 待本地运行后填写 | 待填写 | `docs/images/t24-overview-api.png` |
+| T25 | Prometheus 即时查询 API 测试 | `/api/prometheus/query?query=up` 返回 target 状态数据 | 待本地运行后填写 | 待填写 | `docs/images/t25-prometheus-query-api.png` |
+| T26 | Prometheus 区间查询 API 测试 | `/api/prometheus/range` 返回可绘制曲线的时间序列数据 | 待本地运行后填写 | 待填写 | `docs/images/t26-prometheus-range-api.png` |
+| T27 | Targets 搜索与过滤测试 | Targets 页能按 health 过滤并按 job/instance 搜索 | 待本地运行后填写 | 待填写 | `docs/images/t27-targets-filter.png` |
+| T28 | Alerts 聚合 API 测试 | `/api/alerts` 返回告警统计和告警列表 | 待本地运行后填写 | 待填写 | `docs/images/t28-alerts-api.png` |
+| T29 | demo-app 接口测试 | `/health`、`/metrics`、`/api/hello`、`/api/error`、`/api/slow` 行为符合预期 | 待本地运行后填写 | 待填写 | `docs/images/t29-demo-app-apis.png` |
+| T30 | blackbox 直接探测测试 | blackbox probe 返回 `probe_success` 和探测耗时指标 | 待本地运行后填写 | 待填写 | `docs/images/t30-blackbox-direct-probe.png` |
+| T31 | 告警规则加载测试 | Prometheus 能加载 host、container、service、security 四类规则 | 待本地运行后填写 | 待填写 | `docs/images/t31-prometheus-rules.png` |
+| T32 | Alertmanager 路由配置测试 | default、critical、warning receiver 和 severity 路由存在 | 待本地运行后填写 | 待填写 | `docs/images/t32-alertmanager-route.png` |
+| T33 | Grafana Dashboard provisioning 测试 | Grafana 重启后 Dashboard 能自动加载 | 待本地运行后填写 | 待填写 | `docs/images/t33-grafana-provisioning.png` |
+| T34 | 安全风险阈值边界测试 | 风险分数 30、70、90 对应低/中/高风险显示和告警变化 | 待本地运行后填写 | 待填写 | `docs/images/t34-risk-threshold.png` |
+| T35 | Kubernetes 示例文件检查 | `k8s/` 中 Deployment、Service、ServiceMonitor 示例结构完整 | 待本地运行后填写 | 待填写 | `docs/images/t35-k8s-yaml-check.png` |
+| T36 | 日志排查测试 | 关键服务日志可用于定位启动、连接或配置错误 | 待本地运行后填写 | 待填写 | `docs/images/t36-compose-logs.png` |
 
 ## 6. 详细测试记录
 

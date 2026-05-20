@@ -704,6 +704,18 @@ http://127.0.0.1:9093
 | T14 | 安全风险告警测试 | 点击设置风险分数为 90，或执行 `python .\scripts\simulate_security_risk.py 90` | 可能触发安全风险告警 | `docs/images/t14-risk-alert.png` |
 | T15 | Alertmanager 展示测试 | 打开告警中心或 `http://127.0.0.1:9093` | 告警可被查看 | `docs/images/t15-alertmanager.png` |
 | T16 | 停止服务测试 | 执行 `docker compose down` | 容器停止，端口释放 | `docs/images/t16-compose-down.png` |
+| T17 | Overview API 测试 | 打开 `http://127.0.0.1:7000/api/overview` | 后端返回总览数据 | `docs/images/t17-overview-api.png` |
+| T18 | Prometheus 查询 API 测试 | 打开 `http://127.0.0.1:7000/api/prometheus/query?query=up` | 返回 target 状态数据 | `docs/images/t18-prometheus-query-api.png` |
+| T19 | Targets 搜索过滤测试 | 在主界面 Targets 页筛选 health 并搜索 job | 表格过滤结果正确 | `docs/images/t19-targets-filter.png` |
+| T20 | Alerts 聚合 API 测试 | 打开 `http://127.0.0.1:7000/api/alerts` | 返回告警统计和列表 | `docs/images/t20-alerts-api.png` |
+| T21 | demo-app 接口测试 | 访问 `/health`、`/metrics`、`/api/hello`、`/api/error`、`/api/slow` | 测试服务接口行为符合预期 | `docs/images/t21-demo-app-apis.png` |
+| T22 | blackbox 直接探测测试 | 使用 blackbox probe 探测 demo-app health | 返回探测指标 | `docs/images/t22-blackbox-direct.png` |
+| T23 | Prometheus 告警规则加载测试 | 打开 Prometheus Rules 或 Alerts 页面 | 四类规则被加载 | `docs/images/t23-prometheus-rules.png` |
+| T24 | Alertmanager 路由配置测试 | 查看 Alertmanager 状态或配置页面 | receiver 和 severity 路由存在 | `docs/images/t24-alertmanager-route.png` |
+| T25 | Grafana provisioning 测试 | 重启 Grafana 后查看 Dashboard | Dashboard 自动加载 | `docs/images/t25-grafana-provisioning.png` |
+| T26 | 安全风险阈值边界测试 | 分别设置风险分数为 30、70、90 | 风险等级和告警状态变化合理 | `docs/images/t26-risk-threshold.png` |
+| T27 | Kubernetes 示例文件检查 | 查看 `k8s/` YAML，必要时执行 dry-run | 示例结构完整 | `docs/images/t27-k8s-yaml-check.png` |
+| T28 | 日志排查测试 | 执行 `docker compose logs prometheus grafana console-backend` | 日志可用于定位问题 | `docs/images/t28-compose-logs.png` |
 
 测试记录填写原则：
 
