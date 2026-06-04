@@ -20,11 +20,11 @@ http://127.0.0.1:7001
 
 | 策略 | 说明 |
 | --- | --- |
-| Docker Compose 主实现 | 用于本地运行、演示、截图和答辩 |
+| Docker Compose 主实现 | 用于本地运行、演示、截图和项目报告展示 |
 | Kubernetes 扩展研究 | 通过文档和 YAML 示例说明 Kubernetes 监控方案 |
 | SecureMonitor OS 主界面 | 统一展示监控状态、告警、安全指标、异常模拟和文档入口 |
 | Grafana Dashboard | 使用第三方开源 Grafana 展示 Prometheus 指标曲线和 Dashboard |
-| 文档与答辩材料 | 为课程报告、测试记录和答辩讲解准备 Markdown 文档 |
+| 文档与项目材料 | 为课程报告、测试记录和项目流程说明准备 Markdown 文档 |
 
 ## 2. 课程要求对应关系
 
@@ -60,7 +60,7 @@ http://127.0.0.1:7001
 
 ## 4. 服务组成
 
-本项目答辩展示时只需要打开一个主要界面：
+本项目项目报告展示时只需要打开一个主要界面：
 
 ```text
 http://127.0.0.1:7001
@@ -70,7 +70,7 @@ http://127.0.0.1:7001
 
 | 服务 | 展示方式 | 作用 |
 | --- | --- | --- |
-| SecureMonitor OS Console | 主界面直接访问 `http://127.0.0.1:7001` | 统一可视化控制台，答辩主要展示页面 |
+| SecureMonitor OS Console | 主界面直接访问 `http://127.0.0.1:7001` | 统一可视化控制台，项目报告展示主要展示页面 |
 | console-backend | 由主界面自动调用 | 封装 Prometheus、Alertmanager、Grafana、Exporter API |
 | Prometheus | 通过主界面的总览、Targets、告警中心间接展示 | 指标采集、PromQL 查询、Targets、Alerts 和告警规则 |
 | Grafana | 通过主界面的 Grafana 入口打开 Dashboard | Dashboard 可视化，默认账号 `admin/admin` |
@@ -143,7 +143,7 @@ flowchart TD
 | `console-frontend/` | SecureMonitor OS 主前端界面 |
 | `scripts/` | 异常模拟脚本 |
 | `k8s/` | Kubernetes 扩展研究示例文件 |
-| `docs/` | 课程设计文档、测试计划、测试报告、答辩稿和报告大纲 |
+| `docs/` | 课程设计文档、测试计划、测试报告、项目说明稿和报告大纲 |
 | `AGENTS.md` | 项目开发规则和课程目标说明 |
 
 ## 8. 启动与停止
@@ -214,7 +214,7 @@ http://127.0.0.1:7001
 
 顶部状态栏用于快速判断系统是否正常：
 
-| 展示项 | 含义 | 答辩讲解方式 |
+| 展示项 | 含义 | 项目流程说明方式 |
 | --- | --- | --- |
 | Prometheus | Prometheus 服务是否可访问 | 绿色表示指标采集核心服务正常 |
 | Grafana | Grafana 是否可访问 | 绿色表示 Dashboard 服务正常 |
@@ -228,7 +228,7 @@ http://127.0.0.1:7001
 
 ### 9.2 左侧功能按钮
 
-主界面左侧是功能入口，答辩时可以按从上到下的顺序讲解。
+主界面左侧是功能入口，项目报告展示时可以按从上到下的顺序讲解。
 
 #### 9.2.1 总览
 
@@ -244,7 +244,7 @@ http://127.0.0.1:7001
 - 服务拓扑：展示 Exporters、Prometheus、Alertmanager、Grafana、SecureMonitor OS 的关系。
 - 最近告警：展示当前告警名称、等级、状态和描述。
 
-答辩讲解建议：
+项目流程说明建议：
 
 1. 先说明这是统一控制台，不需要分别打开多个系统。
 2. 指出顶部状态栏和总览卡片都来自后端 API。
@@ -268,7 +268,7 @@ http://127.0.0.1:7001
 - Prometheus 抓取 `node-exporter:9100`。
 - 核心指标包括 `node_cpu_seconds_total`、`node_memory_MemAvailable_bytes`、`node_filesystem_*`、`node_network_*`。
 
-答辩讲解建议：
+项目流程说明建议：
 
 1. 说明 node_exporter 负责采集物理节点指标。
 2. 展示 CPU、内存、磁盘指标。
@@ -291,7 +291,7 @@ http://127.0.0.1:7001
 - Prometheus 抓取 `cadvisor:8080`。
 - 核心指标包括 `container_cpu_usage_seconds_total`、`container_memory_usage_bytes`、`container_network_receive_bytes_total`、`container_network_transmit_bytes_total`。
 
-答辩讲解建议：
+项目流程说明建议：
 
 1. 说明 cAdvisor 和 node_exporter 的区别。
 2. node_exporter 看主机，cAdvisor 看容器。
@@ -314,7 +314,7 @@ http://127.0.0.1:7001
 - Prometheus 直接抓取 demo-app 的 `/metrics`。
 - Prometheus 通过 blackbox_exporter 探测 `http://demo-app:5000/health`。
 
-答辩讲解建议：
+项目流程说明建议：
 
 1. 说明普通 `/metrics` 采集是应用主动暴露指标。
 2. blackbox 探测是站在外部用户视角检查服务是否可访问。
@@ -341,7 +341,7 @@ http://127.0.0.1:7001
 - 按 job 或 instance 搜索。
 - 查看 target 详情。
 
-答辩讲解建议：
+项目流程说明建议：
 
 1. 展示 `prometheus`、`node-exporter`、`cadvisor`、`alertmanager`、`blackbox-exporter` 等静态发现目标。
 2. 展示 `security-exporter`、`demo-app` 等文件型动态发现目标。
@@ -362,7 +362,7 @@ http://127.0.0.1:7001
 | `security_high_cpu_process_count` | 高 CPU 进程数量 | Gauge | 可能表示异常计算任务或资源消耗攻击 |
 | `security_risk_score` | 安全风险分数 | Gauge | 0-100 分，分数越高风险越高 |
 
-答辩讲解建议：
+项目流程说明建议：
 
 1. 说明这些指标用于课程设计模拟，不读取真实隐私数据。
 2. 说明 security_exporter 的作用是把安全事件转成 Prometheus 可采集的指标。
@@ -385,7 +385,7 @@ http://127.0.0.1:7001
 - 持续时间。
 - 摘要和描述。
 
-答辩讲解建议：
+项目流程说明建议：
 
 1. 说明 Prometheus 根据 rules 判断是否触发告警。
 2. 说明 Alertmanager 负责告警分组、去重、路由和展示。
@@ -410,7 +410,7 @@ Grafana 默认账号：
 密码：admin
 ```
 
-答辩讲解建议：
+项目流程说明建议：
 
 1. 说明 Grafana 是第三方开源可视化工具。
 2. 说明本项目通过 Docker 容器运行 Grafana。
@@ -451,7 +451,7 @@ Grafana 默认账号：
 - Kubernetes 安全监控思路。
 - `k8s/` 目录中的示例文件说明。
 
-答辩讲解建议：
+项目流程说明建议：
 
 1. 诚实说明 Docker Compose 是主实现。
 2. Kubernetes 是扩展研究和可选实验。
@@ -490,9 +490,9 @@ http://prometheus:9090
 
 算。Prometheus、Grafana、Alertmanager、node_exporter、cAdvisor、blackbox_exporter 都是成熟的第三方开源组件。本课程设计的重点不是重复造这些基础设施，而是完成它们的部署、配置、集成、指标采集、告警规则、Dashboard 展示、安全指标扩展和统一控制台封装。
 
-## 11. 答辩展示流程
+## 11. 项目报告展示流程
 
-建议答辩时按下面顺序演示。每一步都可以截图放入报告。
+建议项目报告展示时按下面顺序演示。每一步都可以截图放入报告。
 
 ### 第一步：启动项目
 
@@ -624,7 +624,7 @@ http://127.0.0.1:9090/targets
 
 讲解：
 
-- 异常模拟用于答辩演示指标变化和告警触发。
+- 异常模拟用于项目报告展示演示指标变化和告警触发。
 - 不会执行删除数据、删除容器或删除镜像等危险操作。
 
 也可以使用脚本验证：
@@ -1177,11 +1177,11 @@ docker compose up -d --build
 | `docs/07_kubernetes_research.md` | Kubernetes 监控研究 |
 | `docs/08_test_plan.md` | 测试计划 |
 | `docs/09_test_report.md` | 测试报告模板 |
-| `docs/10_defense_script.md` | 答辩稿和老师可能提问 |
+| `docs/10_project_script.md` | 项目说明稿和老师可能提问 |
 | `docs/course_report_outline.md` | 课程设计报告大纲 |
 | `docs/report_format_reference.md` | 课程报告参考样例格式总结 |
 
-## 18. 答辩可以强调的亮点
+## 18. 项目报告展示可以强调的亮点
 
 1. Docker Compose 一键部署 Prometheus + Grafana + Alertmanager + Exporters。
 2. 同时实现 Prometheus 静态服务发现和文件型动态服务发现。
@@ -1216,3 +1216,39 @@ docker compose ps
 - `http://127.0.0.1:5000/health`
 
 实际测试结果请填写到 `docs/09_test_report.md`。
+
+## 课程提交前验收清单
+
+课程提交前建议按下面顺序核对，形成“课程要求 -> 项目实现 -> 配置文件 -> 页面截图 -> 测试结果 -> 报告章节”的证据链。没有实际运行的测试结果不要编造，未运行内容写“待本地运行后填写”。
+
+| 验收项 | 证明方式 | 关键文件 | 建议截图 |
+| --- | --- | --- | --- |
+| Prometheus + Grafana 监控系统 | `docker compose ps` 显示 Prometheus、Grafana、Alertmanager 等服务运行 | `docker-compose.yml` | `docker-compose-ps.png` |
+| 静态服务发现 | Prometheus Targets 中看到 prometheus、node-exporter、cadvisor、alertmanager、blackbox-exporter | `prometheus/prometheus.yml` | `prometheus-targets.png` |
+| 动态服务发现 | Prometheus Targets 中看到 `dynamic-file-sd` 的 security-exporter 和 demo-app | `prometheus/file_sd/targets.json` | `prometheus-targets.png` |
+| 物理节点性能监控 | SecureMonitor OS 主机监控页显示 CPU、内存、磁盘；Windows 环境优先使用 Windows host exporter | `scripts/windows_host_metrics_exporter.py`、`console-backend/app/services/system_service.py` | `securemonitor-host.png` |
+| Docker 容器监控 | cAdvisor 正常运行，容器监控页和 Grafana 容器大屏可查看 | `docker-compose.yml`、`grafana/dashboards/container-dashboard.json` | `securemonitor-container.png`、`grafana-container-dashboard.png` |
+| service 可用性监控 | blackbox_exporter 探测 demo-app `/health`，服务探测页显示探测状态 | `blackbox/blackbox.yml`、`prometheus/prometheus.yml` | `securemonitor-service.png` |
+| 安全监控指标 | security_exporter 暴露模拟安全指标，安全中心显示失败登录、可疑请求、风险分数等 | `exporters/security_exporter/app.py` | `securemonitor-security-before.png`、`securemonitor-security-after.png` |
+| 告警规则和 Alertmanager | Prometheus Alerts 页面和 SecureMonitor OS 告警中心能展示告警，Alertmanager 能访问 | `prometheus/rules/*.yml`、`alertmanager/alertmanager.yml` | `prometheus-alerts.png`、`securemonitor-alerts.png`、`alertmanager.png` |
+| Grafana 数据源和 Dashboard | Grafana 中 Prometheus 数据源存在，主机、容器、服务、安全 Dashboard 可访问 | `grafana/provisioning/`、`grafana/dashboards/*.json` | `grafana-datasource.png`、`grafana-host-dashboard.png` |
+| Kubernetes 监控研究 | 项目材料中说明 Node、Pod、Service、Deployment 的监控方式和 ServiceMonitor / PodMonitor 作用 | `docs/k8s_pod_service_monitoring_mapping.md`、`k8s/*.yaml` | `securemonitor-kubernetes.png` |
+| 测试计划和测试报告 | 测试用例齐全，实际运行后补充结果和截图 | `docs/08_test_plan.md`、`docs/09_test_report.md` | 按 `docs/screenshot_checklist.md` 补充 |
+
+推荐执行命令：
+
+```powershell
+cd C:\Users\52697\secure-monitor
+docker compose up -d
+docker compose ps
+```
+
+推荐访问页面：
+
+- SecureMonitor OS 主界面：`http://127.0.0.1:7001`
+- Prometheus Targets：`http://127.0.0.1:9090/targets`
+- Prometheus Alerts：`http://127.0.0.1:9090/alerts`
+- Grafana：`http://127.0.0.1:3000`
+- Alertmanager：`http://127.0.0.1:9093`
+
+注意：Kubernetes 部分是扩展研究和可选实验，不能写成已经完成生产级 Kubernetes 部署。`security_exporter` 是课程设计模拟安全指标，不是生产级入侵检测系统。

@@ -24,7 +24,7 @@ SecureMonitor OS：基于 Docker / Kubernetes 的 Prometheus + Grafana 安全监
 | 完成 Prometheus 和 Grafana 在 k8s 或 docker 环境下的部署 | Docker Compose 主实现已完成；Kubernetes 提供扩展研究文件 | `docker-compose.yml`、`k8s/` | Docker Compose 本地启动；K8s 可选实验 | Docker 已实现，K8s 可选扩展 |
 | 对本机服务器性能和集群状态进行监控 | node_exporter 采集本机性能，cAdvisor 采集 Docker 容器状态，SecureMonitor OS 与 Grafana 展示状态 | `docker-compose.yml`、`console-frontend/`、`grafana/dashboards/` | 查看 SecureMonitor OS 总览和 Grafana 主机/容器大屏 | 已实现 |
 
-## 答辩表述建议
+## 项目报告展示表述建议
 
 本项目以 Docker Compose 作为主实现，已经完成 Prometheus、Grafana、Alertmanager 和多类 Exporter 的部署、采集、告警和可视化。Kubernetes 部分作为扩展研究，通过文档和示例 YAML 说明 Prometheus Operator、kube-prometheus-stack、kube-state-metrics、ServiceMonitor、PodMonitor 等机制。
 

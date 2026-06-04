@@ -4,6 +4,7 @@ import ErrorState from "../components/ErrorState";
 import MetricCard from "../components/MetricCard";
 import TargetTable from "../components/TargetTable";
 import { normalizeTargets } from "../utils/normalizers";
+import { onGlobalRefresh } from "../utils/refreshEvents";
 
 export default function TargetsPage() {
   const [targets, setTargets] = useState<any[]>([]);
@@ -11,13 +12,24 @@ export default function TargetsPage() {
   const [keyword, setKeyword] = useState("");
   const [error, setError] = useState(false);
 
-  useEffect(() => {
-    api.targets()
+  async function loadTargets() {
+    api
+      .targets()
       .then((data) => {
         setTargets(normalizeTargets(data.targets || []));
         setError(false);
       })
       .catch(() => setError(true));
+  }
+
+  useEffect(() => {
+    loadTargets();
+    const removeListener = onGlobalRefresh(loadTargets);
+    const timer = window.setInterval(loadTargets, 5000);
+    return () => {
+      removeListener();
+      window.clearInterval(timer);
+    };
   }, []);
 
   const visible = useMemo(() => {
@@ -28,7 +40,7 @@ export default function TargetsPage() {
     });
   }, [targets, filter, keyword]);
 
-  if (error) return <ErrorState />;
+  if (error) return <ErrorState title="Targets 加载失败" description="请确认 Prometheus 已经启动并且可以访问 targets API。" />;
 
   const up = targets.filter((target) => target.health === "up").length;
   const down = targets.filter((target) => target.health !== "up").length;

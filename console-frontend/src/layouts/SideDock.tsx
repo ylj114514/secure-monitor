@@ -1,7 +1,9 @@
 import {
   Activity,
   Bell,
+  BookOpen,
   Boxes,
+  ClipboardList,
   Gauge,
   Home,
   Network,
@@ -19,9 +21,11 @@ const items = [
   ["targets", "Targets", Target],
   ["security", "安全中心", Shield],
   ["alerts", "告警中心", Bell],
+  ["alertRules", "告警规则", ClipboardList],
   ["grafana", "Grafana", Gauge],
   ["simulation", "异常模拟", PlayCircle],
   ["kubernetes", "Kubernetes", Activity],
+  ["docs", "项目材料", BookOpen],
 ] as const;
 
 export default function SideDock({

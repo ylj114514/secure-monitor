@@ -1,68 +1,99 @@
-import { useEffect, useState } from "react";
-import { api } from "../api/client";
 import StatusBadge from "../components/StatusBadge";
 
-const docMeta: Record<string, { purpose: string; chapter: string; status: string }> = {
-  "课程要求映射": { purpose: "把课程要求逐条映射到项目实现，方便答辩对照。", chapter: "需求分析 / 验收说明", status: "已完成" },
-  "项目需求文档": { purpose: "说明系统功能需求、非功能需求和课程目标。", chapter: "系统需求分析", status: "已完成" },
-  "系统架构设计": { purpose: "描述 Docker Compose、Prometheus、Grafana、Alertmanager 和统一控制台关系。", chapter: "系统总体架构", status: "已完成" },
-  "Prometheus 设计说明": { purpose: "说明 scrape_configs、static_configs、file_sd_configs 和告警规则加载。", chapter: "Prometheus 指标采集设计", status: "已完成" },
-  "Grafana 设计说明": { purpose: "说明数据源 provisioning 和 Dashboard 设计。", chapter: "Grafana 可视化设计", status: "已完成" },
-  "Alertmanager 设计说明": { purpose: "说明告警分组、去重、路由、静默和展示。", chapter: "Alertmanager 告警设计", status: "已完成" },
-  "安全监控设计": { purpose: "说明 security_exporter 模拟安全指标和告警用途。", chapter: "自定义安全监控设计", status: "已完成" },
-  "Kubernetes 研究": { purpose: "说明 Prometheus Operator、kube-prometheus-stack、ServiceMonitor 和 PodMonitor。", chapter: "Kubernetes 环境监控研究", status: "已完成" },
-  "测试计划": { purpose: "列出课程验收测试用例、步骤、预期结果和截图位置。", chapter: "系统测试与结果分析", status: "待本地验证" },
-  "测试报告": { purpose: "记录本地运行后的测试结果和截图。", chapter: "测试结果记录", status: "待本地验证" },
-  "答辩稿": { purpose: "提供 1 分钟介绍、3 分钟演示和老师可能提问。", chapter: "答辩准备", status: "已完成" },
-};
-
-const fallbackDocs = [
-  "课程要求映射",
-  "项目需求文档",
-  "系统架构设计",
-  "Prometheus 设计说明",
-  "Grafana 设计说明",
-  "Alertmanager 设计说明",
-  "安全监控设计",
-  "Kubernetes 研究",
-  "测试计划",
-  "测试报告",
-  "答辩稿",
+const materials = [
+  {
+    name: "课程要求覆盖清单",
+    purpose: "逐条说明课程要求、项目实现、相关文件、截图位置和测试结果。",
+    chapter: "需求分析 / 课程要求覆盖",
+    status: "已完成",
+    file: "docs/course_requirement_checklist.md",
+  },
+  {
+    name: "测试计划",
+    purpose: "列出 Docker Compose、Prometheus、Grafana、告警、安全模拟等测试用例。",
+    chapter: "系统测试计划",
+    status: "已完成",
+    file: "docs/08_test_plan.md",
+  },
+  {
+    name: "测试报告模板",
+    purpose: "记录本地运行结果、问题记录和截图占位，未运行内容保持待填写。",
+    chapter: "系统测试结果",
+    status: "待补充截图",
+    file: "docs/09_test_report.md",
+  },
+  {
+    name: "截图材料清单",
+    purpose: "按流程列出需要补充的 Docker、Prometheus、Grafana、SecureMonitor OS 截图。",
+    chapter: "项目材料整理",
+    status: "已完成",
+    file: "docs/screenshot_checklist.md",
+  },
+  {
+    name: "告警规则说明",
+    purpose: "解释主机、容器、服务、安全四类告警规则的触发条件和处理建议。",
+    chapter: "告警设计说明",
+    status: "已完成",
+    file: "docs/alert_rule_explanation.md",
+  },
+  {
+    name: "Kubernetes 监控映射",
+    purpose: "说明 Node、Pod、Service、Deployment 如何通过 Kubernetes 生态监控。",
+    chapter: "Kubernetes 扩展研究",
+    status: "扩展研究",
+    file: "docs/k8s_pod_service_monitoring_mapping.md",
+  },
+  {
+    name: "项目报告大纲",
+    purpose: "提供课程报告章节结构和写作素材，便于整理最终提交材料。",
+    chapter: "项目报告",
+    status: "已完成",
+    file: "docs/course_report_outline.md",
+  },
+  {
+    name: "项目说明稿",
+    purpose: "提供项目介绍、流程说明、技术讲解和可能问题回答。",
+    chapter: "项目流程说明",
+    status: "已完成",
+    file: "docs/10_project_script.md",
+  },
 ];
 
 export default function DocsPage() {
-  const [links, setLinks] = useState<any[]>([]);
-
-  useEffect(() => {
-    api.docs().then((data) => setLinks(data.links || [])).catch(() => undefined);
-  }, []);
-
-  const docs = links.length ? links.map((link) => link.name) : fallbackDocs;
-
   return (
     <div className="stack">
-      <div className="panel">
-        <h3>项目文档中心</h3>
-        <p>文档按课程报告和答辩用途组织。页面只展示文档用途、对应章节和状态，不直接把 Markdown 路径作为主要内容。</p>
-      </div>
-      <div className="doc-grid">
-        {docs.map((name) => {
-          const meta = docMeta[name] || { purpose: "项目配套说明文档。", chapter: "课程设计材料", status: "待补充" };
-          return (
-            <div className="doc-card" key={name}>
-              <div className="panel-title-row">
-                <h3>{name}</h3>
-                <StatusBadge status={meta.status === "已完成" ? "ok" : "warning"} label={meta.status} />
-              </div>
-              <p>{meta.purpose}</p>
-              <div className="detail-grid compact-detail">
-                <div><span>适合章节</span><strong>{meta.chapter}</strong></div>
-              </div>
-              <button className="ghost-button">查看说明</button>
+      <section className="panel">
+        <h3>项目材料中心</h3>
+        <p className="muted-text">
+          本页面整理课程提交需要的项目材料入口，重点形成“课程要求、配置文件、页面截图、测试结果、报告章节”的证据链。
+          页面只展示材料用途和完成状态，不把 Markdown 原文当作主要内容展示。
+        </p>
+      </section>
+
+      <section className="doc-grid">
+        {materials.map((item) => (
+          <article className="doc-card" key={item.name}>
+            <div className="panel-title-row">
+              <h3>{item.name}</h3>
+              <StatusBadge
+                status={item.status === "已完成" ? "ok" : item.status === "扩展研究" ? "warning" : "warning"}
+                label={item.status}
+              />
             </div>
-          );
-        })}
-      </div>
+            <p>{item.purpose}</p>
+            <div className="detail-grid compact-detail">
+              <div>
+                <span>报告章节</span>
+                <strong>{item.chapter}</strong>
+              </div>
+              <div>
+                <span>材料文件</span>
+                <strong>{item.file}</strong>
+              </div>
+            </div>
+          </article>
+        ))}
+      </section>
     </div>
   );
 }

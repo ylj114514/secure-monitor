@@ -69,6 +69,6 @@ security_risk_score
 increase(security_failed_login_total[5m])
 ```
 
-## 答辩展示作用
+## 项目报告展示作用
 
-Grafana 是答辩中最直观的展示入口。可以依次打开四类 Dashboard，说明 Prometheus 指标如何从采集、存储、查询最终转化为可视化图表。实际截图待本地启动后在 Grafana 页面验证。
+Grafana 是项目报告展示中最直观的展示入口。可以依次打开四类 Dashboard，说明 Prometheus 指标如何从采集、存储、查询最终转化为可视化图表。实际截图待本地启动后在 Grafana 页面验证。

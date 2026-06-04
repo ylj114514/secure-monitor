@@ -2,7 +2,7 @@
 
 ## 项目目标
 
-SecureMonitor OS 的目标是在 Prometheus + Grafana + Alertmanager + Exporters 监控系统基础上，新增统一可视化控制台，使课程答辩时可以在一个类操作系统桌面中展示监控总览、Targets、安全指标、告警、Grafana 入口、异常模拟和 Kubernetes 研究内容。
+SecureMonitor OS 的目标是在 Prometheus + Grafana + Alertmanager + Exporters 监控系统基础上，新增统一可视化控制台，使课程项目报告展示时可以在一个类操作系统桌面中展示监控总览、Targets、安全指标、告警、Grafana 入口、异常模拟和 Kubernetes 研究内容。
 
 ## 基础监控需求
 

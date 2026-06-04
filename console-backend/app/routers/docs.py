@@ -18,6 +18,6 @@ async def links():
             {"name": "Kubernetes Research", "path": "docs/07_kubernetes_research.md"},
             {"name": "Test Plan", "path": "docs/08_test_plan.md"},
             {"name": "Test Report", "path": "docs/09_test_report.md"},
-            {"name": "Defense Script", "path": "docs/10_defense_script.md"},
+            {"name": "Project Script", "path": "docs/10_project_script.md"},
         ]
     }

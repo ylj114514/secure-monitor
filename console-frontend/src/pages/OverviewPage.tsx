@@ -7,6 +7,7 @@ import ServiceTopology from "../components/ServiceTopology";
 import StatusBadge from "../components/StatusBadge";
 import { riskLevel } from "../utils/formatters";
 import { normalizeAlerts } from "../utils/normalizers";
+import { onGlobalRefresh } from "../utils/refreshEvents";
 
 export default function OverviewPage() {
   const [overview, setOverview] = useState<any>({});
@@ -14,7 +15,7 @@ export default function OverviewPage() {
   const [alerts, setAlerts] = useState<any[]>([]);
   const [error, setError] = useState(false);
 
-  useEffect(() => {
+  async function loadOverview() {
     Promise.all([api.overview(), api.security(), api.alerts()])
       .then(([overviewData, securityData, alertData]) => {
         setOverview(overviewData);
@@ -23,6 +24,16 @@ export default function OverviewPage() {
         setError(false);
       })
       .catch(() => setError(true));
+  }
+
+  useEffect(() => {
+    loadOverview();
+    const removeListener = onGlobalRefresh(loadOverview);
+    const timer = window.setInterval(loadOverview, 5000);
+    return () => {
+      removeListener();
+      window.clearInterval(timer);
+    };
   }, []);
 
   if (error) return <ErrorState />;
@@ -33,13 +44,14 @@ export default function OverviewPage() {
   const cpu = Number(overview.cpu_usage || 0);
   const memory = Number(overview.memory_usage || 0);
   const disk = Number(overview.disk_usage || 0);
+  const source = overview.host_metric_source === "windows-host-exporter" ? "Windows 宿主机原生指标" : "node_exporter 指标";
 
   return (
     <div className="overview-page clean-overview">
       <section className="overview-hero">
         <div>
           <h2>SecureMonitor OS</h2>
-          <p>统一展示监控采集、服务可用性、告警状态和模拟安全风险。</p>
+          <p>统一展示监控采集、服务可用性、告警状态和模拟安全风险，适合课程项目报告展示演示和截图。</p>
         </div>
         <div className="hero-status">
           <StatusBadge ok={overview.prometheus_up} label="Prometheus" />
@@ -75,7 +87,7 @@ export default function OverviewPage() {
         <div className="panel compact-panel">
           <div className="panel-title-row">
             <h3>资源摘要</h3>
-            <span className="muted">主机性能</span>
+            <span className="muted">{source}</span>
           </div>
           <div className="resource-list">
             <ResourceBar label="CPU 使用率" value={cpu} />
@@ -90,10 +102,10 @@ export default function OverviewPage() {
             <StatusBadge status={risk.tone === "good" ? "ok" : risk.tone === "warn" ? "warning" : "critical"} label={risk.label} />
           </div>
           <div className="security-summary-list">
-            <SummaryRow label="失败登录" value={security.failed_login_total || 0} note="security_failed_login_total" />
-            <SummaryRow label="可疑请求" value={security.suspicious_request_total || 0} note="security_suspicious_request_total" />
-            <SummaryRow label="开放端口" value={security.open_port_count || 0} note="security_open_port_count" />
-            <SummaryRow label="容器重启" value={security.container_restart_total || 0} note="security_container_restart_total" />
+            <SummaryRow label="失败登录" value={security.failed_login_total || 0} note="短时间增长过快可能表示暴力破解。" />
+            <SummaryRow label="可疑请求" value={security.suspicious_request_total || 0} note="可能表示扫描或异常访问。" />
+            <SummaryRow label="开放端口" value={security.open_port_count || 0} note="端口过多会扩大攻击面。" />
+            <SummaryRow label="容器重启" value={security.container_restart_total || 0} note="频繁重启可能表示服务异常。" />
           </div>
         </div>
       </section>

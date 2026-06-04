@@ -153,6 +153,7 @@ services:
       GRAFANA_PUBLIC_URL: http://127.0.0.1:3000
       SECURITY_EXPORTER_URL: http://security-exporter:8000
       DEMO_APP_URL: http://demo-app:5000
+      WINDOWS_HOST_EXPORTER_URL: http://host.docker.internal:9182
     depends_on:
       - prometheus
       - alertmanager

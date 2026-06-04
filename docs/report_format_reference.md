@@ -1,6 +1,6 @@
 # 课程报告参考样例格式总结
 
-本文档根据用户提供的 Word 样例文件《课程报告参考样例-隐私计算平台互联互通及技术实现-张三.docx》整理，用于指导 SecureMonitor OS 课程设计报告的排版、章节组织和答辩材料整理。
+本文档根据用户提供的 Word 样例文件《课程报告参考样例-隐私计算平台互联互通及技术实现-张三.docx》整理，用于指导 SecureMonitor OS 课程设计报告的排版、章节组织和项目材料整理。
 
 说明：本文只总结报告格式和写作结构，不复制样例正文内容。
 
@@ -90,7 +90,7 @@
 - 任务分工；
 - 个人得分。
 
-本项目建议保留类似表格，便于老师评分和答辩检查。
+本项目建议保留类似表格，便于老师评分和项目报告展示检查。
 
 SecureMonitor OS 可使用如下评分表字段：
 
@@ -107,7 +107,7 @@ SecureMonitor OS 可使用如下评分表字段：
 
 | 角色 | 姓名 | 班级学号 | 任务分工 | 个人得分 |
 | --- | --- | --- | --- | --- |
-| 组长 | 待填写 | 待填写 | 项目总体设计、部署与答辩 | 待填写 |
+| 组长 | 待填写 | 待填写 | 项目总体设计、部署与项目报告展示 | 待填写 |
 | 组员 | 待填写 | 待填写 | Prometheus 配置与告警规则 | 待填写 |
 | 组员 | 待填写 | 待填写 | Grafana Dashboard 与测试 | 待填写 |
 | 组员 | 待填写 | 待填写 | Kubernetes 研究与文档 | 待填写 |
@@ -127,7 +127,7 @@ SecureMonitor OS 可使用如下评分表字段：
 SecureMonitor OS 建议摘要写法：
 
 ```text
-摘要：随着 Docker 和 Kubernetes 等容器技术的发展，应用服务数量和运行环境复杂度不断提高，传统人工巡检方式难以及时发现主机资源异常、容器状态异常、服务不可用和安全风险。本项目基于 Docker Compose 构建 Prometheus、Grafana、Alertmanager 及多个 Exporter 组成的监控告警系统，实现对主机、容器、服务可用性和模拟安全指标的采集、告警与可视化展示。同时，项目设计 SecureMonitor OS 统一可视化控制台，将 Prometheus Targets、告警、安全指标、Grafana Dashboard 入口和 Kubernetes 研究内容整合到同一 Web 页面中，便于课程演示、截图和答辩说明。
+摘要：随着 Docker 和 Kubernetes 等容器技术的发展，应用服务数量和运行环境复杂度不断提高，传统人工巡检方式难以及时发现主机资源异常、容器状态异常、服务不可用和安全风险。本项目基于 Docker Compose 构建 Prometheus、Grafana、Alertmanager 及多个 Exporter 组成的监控告警系统，实现对主机、容器、服务可用性和模拟安全指标的采集、告警与可视化展示。同时，项目设计 SecureMonitor OS 统一可视化控制台，将 Prometheus Targets、告警、安全指标、Grafana Dashboard 入口和 Kubernetes 研究内容整合到同一 Web 页面中，便于课程演示、截图和项目报告展示说明。
 ```
 
 关键词建议：

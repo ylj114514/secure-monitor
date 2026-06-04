@@ -19,7 +19,6 @@ export const fieldNameMap: Record<string, string> = {
   endsAt: "恢复时间",
   status: "状态",
   state: "状态",
-  expr: "PromQL 查询",
   datasource: "数据源",
   panel: "面板",
   dashboard: "仪表盘",

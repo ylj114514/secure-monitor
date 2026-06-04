@@ -1,6 +1,6 @@
 # 12 项目文件功能说明
 
-本文档用于说明 SecureMonitor OS 项目中主要文件和目录的作用，方便课程报告、答辩和后续维护。
+本文档用于说明 SecureMonitor OS 项目中主要文件和目录的作用，方便课程报告、项目报告展示和后续维护。
 
 ## 根目录
 
@@ -117,7 +117,7 @@ console-backend 的作用是避免前端直接处理多个原始服务接口，�
 | `console-frontend/src/utils/` | 数据格式化、字段中文映射、API 结果归一化 |
 | `console-frontend/src/styles/globals.css` | 前端全局样式 |
 
-SecureMonitor OS 前端的目标是把复杂的 Prometheus、Alertmanager、Grafana、Kubernetes 数据转换成适合答辩截图的中文可视化页面。
+SecureMonitor OS 前端的目标是把复杂的 Prometheus、Alertmanager、Grafana、Kubernetes 数据转换成适合项目报告展示截图的中文可视化页面。
 
 ## Kubernetes
 
@@ -145,11 +145,11 @@ Kubernetes 部分用于课程研究和可选实验，不是 Docker Compose 主�
 | `docs/07_kubernetes_research.md` | Kubernetes 研究 |
 | `docs/08_test_plan.md` | 测试计划 |
 | `docs/09_test_report.md` | 测试报告模板 |
-| `docs/10_defense_script.md` | 答辩稿 |
+| `docs/10_project_script.md` | 项目说明稿 |
 | `docs/course_report_outline.md` | 课程设计报告大纲 |
 | `docs/11_final_acceptance.md` | 最终验收说明 |
 | `docs/12_project_file_guide.md` | 项目文件功能说明 |
 
 ## 总结
 
-本项目的核心不是单独编写一个监控算法，而是基于 Prometheus + Grafana 开源生态完成监控系统集成开发，并补充自定义安全指标、统一可视化控制台、Docker/Kubernetes 研究文档和课程答辩材料。
+本项目的核心不是单独编写一个监控算法，而是基于 Prometheus + Grafana 开源生态完成监控系统集成开发，并补充自定义安全指标、统一可视化控制台、Docker/Kubernetes 研究文档和课程项目材料。

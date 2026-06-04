@@ -21,15 +21,38 @@ export const api = {
   docs: () => request<any>("/api/docs/links"),
   query: (query: string) =>
     request<any>(`/api/prometheus/query?query=${encodeURIComponent(query)}`),
-  simulateFailedLogin: () =>
-    request<any>("/api/simulation/failed-login", { method: "POST" }),
+  simulateFailedLogin: (count = 20) =>
+    request<any>("/api/simulation/failed-login", {
+      method: "POST",
+      body: JSON.stringify({ count })
+    }),
+  simulateSuspiciousRequest: (count = 25) =>
+    request<any>("/api/simulation/suspicious-request", {
+      method: "POST",
+      body: JSON.stringify({ count })
+    }),
   simulateRisk: (score = 90) =>
     request<any>("/api/simulation/security-risk", {
       method: "POST",
       body: JSON.stringify({ score })
     }),
-  simulateRestart: () =>
-    request<any>("/api/simulation/container-restart", { method: "POST" }),
+  simulateOpenPorts: (count = 12) =>
+    request<any>("/api/simulation/open-port-count", {
+      method: "POST",
+      body: JSON.stringify({ count })
+    }),
+  simulateHighCpuProcesses: (count = 3) =>
+    request<any>("/api/simulation/high-cpu-process-count", {
+      method: "POST",
+      body: JSON.stringify({ count })
+    }),
+  simulateRestart: (count = 1) =>
+    request<any>("/api/simulation/container-restart", {
+      method: "POST",
+      body: JSON.stringify({ count })
+    }),
+  resetSecurity: () =>
+    request<any>("/api/simulation/reset-security", { method: "POST" }),
   serviceDown: () => request<any>("/api/simulation/service-down", { method: "POST" }),
   serviceRecover: () =>
     request<any>("/api/simulation/service-recover", { method: "POST" })

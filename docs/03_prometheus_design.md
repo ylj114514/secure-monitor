@@ -56,7 +56,7 @@ Alertmanager 负责告警分组、去重、路由、静默和页面展示。
 - `/etc/prometheus/rules/service_alerts.yml`
 - `/etc/prometheus/rules/security_alerts.yml`
 
-这种拆分方式便于报告说明，也便于答辩时按“主机、容器、服务、安全”四类场景展示。
+这种拆分方式便于报告说明，也便于项目报告展示时按“主机、容器、服务、安全”四类场景展示。
 
 ## blackbox_exporter 探测流程
 

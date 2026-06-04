@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export default function RawDataDrawer({
-  title = "开发者原始数据",
+  title = "查看开发者原始数据",
   data,
   language = "json",
 }: {

@@ -2,7 +2,7 @@ export function formatDateTime(value?: string): string {
   if (!value) return "暂无数据";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString();
+  return date.toLocaleString("zh-CN", { hour12: false });
 }
 
 export function formatDuration(value?: number | string): string {
@@ -29,11 +29,12 @@ export function statusText(value?: string | boolean): string {
   if (value === true) return "正常";
   if (value === false) return "异常";
   const normalized = String(value || "unknown").toLowerCase();
-  if (["up", "healthy", "ok", "success", "active"].includes(normalized)) return "正常";
+  if (["up", "healthy", "ok", "success", "active", "normal"].includes(normalized)) return "正常";
   if (["firing", "pending"].includes(normalized)) return "触发中";
   if (normalized === "resolved") return "已恢复";
-  if (normalized === "warning") return "警告";
-  if (["down", "error", "critical", "failed"].includes(normalized)) return "异常";
+  if (["warning", "warn"].includes(normalized)) return "警告";
+  if (normalized === "critical") return "严重";
+  if (["down", "error", "failed", "failure"].includes(normalized)) return "异常";
   return "未知";
 }
 

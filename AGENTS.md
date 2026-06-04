@@ -2,7 +2,7 @@
 
 ## 项目目标
 
-SecureMonitor 是《网络安全编程技术与实例开发》课程设计项目，目标是构建一个基于 Docker / Kubernetes 的 Prometheus + Grafana 安全监控告警系统。项目必须服务于课程设计答辩，做到能运行、能演示、能截图、能写报告、能答辩。
+SecureMonitor 是《网络安全编程技术与实例开发》课程设计项目，目标是构建一个基于 Docker / Kubernetes 的 Prometheus + Grafana 安全监控告警系统。项目必须服务于课程设计项目报告展示，做到能运行、能演示、能截图、能写报告、能项目报告展示。
 
 Docker Compose 版作为主实现，负责本地部署、演示和截图；Kubernetes 版作为扩展研究和可选实验，通过文档和示例 YAML 体现。
 
@@ -44,7 +44,7 @@ Docker Compose 版作为主实现，负责本地部署、演示和截图；Kuber
 7. 涉及原理或设计时必须同步更新 docs。
 8. 不要编造测试结果。
 9. 如果没有实际运行测试，请在文档中写“待本地运行后填写”。
-10. 所有功能都要服务于课程设计：能运行、能演示、能截图、能写报告、能答辩。
+10. 所有功能都要服务于课程设计：能运行、能演示、能截图、能写报告、能项目报告展示。
 
 ## 测试结果要求
 
@@ -58,4 +58,4 @@ Docker Compose 版作为主实现，负责本地部署、演示和截图；Kuber
 
 - Docker Compose 版是主实现，优先保证本地可运行、可演示。
 - Kubernetes 版是扩展研究和可选实验，重点体现 Prometheus Operator、kube-prometheus-stack、kube-state-metrics、ServiceMonitor、PodMonitor 等研究内容。
-- 每个模块应保持可解释、可截图、可答辩。
+- 每个模块应保持可解释、可截图、可项目报告展示。

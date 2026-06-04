@@ -1,4 +1,4 @@
-# 10 答辩稿
+# 10 项目说明稿
 
 ## 一、项目介绍
 
@@ -40,7 +40,7 @@ Docker Compose 是主实现，Kubernetes 是扩展研究和可选实验。
 - 类操作系统桌面风格，展示效果更集中。
 - 统一查看 Targets、安全指标、告警和 Grafana 入口。
 - 异常模拟遵守安全边界，不删除数据，不直接强制停止容器。
-- 同时保留原生 Prometheus、Grafana、Alertmanager 页面，便于答辩对照。
+- 同时保留原生 Prometheus、Grafana、Alertmanager 页面，便于项目报告展示对照。
 
 ## 五、项目不足
 
@@ -54,7 +54,7 @@ Docker Compose 是主实现，Kubernetes 是扩展研究和可选实验。
 
 ### 为什么要做统一控制台？
 
-Prometheus、Grafana、Alertmanager 功能分散。统一控制台可以把状态、指标、告警和模拟操作集中展示，更适合课程答辩和运维演示。
+Prometheus、Grafana、Alertmanager 功能分散。统一控制台可以把状态、指标、告警和模拟操作集中展示，更适合课程项目报告展示和运维演示。
 
 ### 控制台和 Grafana 的区别是什么？
 

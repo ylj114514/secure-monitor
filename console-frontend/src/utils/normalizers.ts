@@ -31,7 +31,6 @@ export type AlertViewModel = {
 
 export type SecurityMetricViewModel = {
   key: string;
-  field: string;
   title: string;
   value: number;
   type: "Counter" | "Gauge";
@@ -46,7 +45,7 @@ export type DashboardViewModel = {
   metrics: string[];
   panelCount: number;
   url: string;
-  panels: Array<{ title: string; type: string; expr: string; description: string }>;
+  panels: Array<{ title: string; type: string; description: string }>;
   raw: unknown;
 };
 
@@ -81,7 +80,7 @@ export function normalizeAlerts(raw: unknown): AlertViewModel[] {
       instance: labels.instance || "未知实例",
       startsAt: formatDateTime(alert.starts_at || alert.startsAt || alert.activeAt),
       duration: formatDuration(alert.durationSeconds) || "暂无数据",
-      summary: alert.summary || annotations.summary || alert.name || "暂无摘要",
+      summary: alert.summary || annotations.summary || alert.name || labels.alertname || "暂无摘要",
       description: alert.description || annotations.description || "暂无描述",
       labels,
       raw: alert,
@@ -93,7 +92,6 @@ export function normalizeSecurityMetrics(raw: Record<string, any> = {}): Securit
   return [
     {
       key: "failed_login_total",
-      field: "security_failed_login_total",
       title: "失败登录次数",
       value: Number(raw.failed_login_total || 0),
       type: "Counter",
@@ -102,7 +100,6 @@ export function normalizeSecurityMetrics(raw: Record<string, any> = {}): Securit
     },
     {
       key: "suspicious_request_total",
-      field: "security_suspicious_request_total",
       title: "可疑请求次数",
       value: Number(raw.suspicious_request_total || 0),
       type: "Counter",
@@ -111,7 +108,6 @@ export function normalizeSecurityMetrics(raw: Record<string, any> = {}): Securit
     },
     {
       key: "open_port_count",
-      field: "security_open_port_count",
       title: "开放端口数量",
       value: Number(raw.open_port_count || 0),
       type: "Gauge",
@@ -120,7 +116,6 @@ export function normalizeSecurityMetrics(raw: Record<string, any> = {}): Securit
     },
     {
       key: "container_restart_total",
-      field: "security_container_restart_total",
       title: "容器重启次数",
       value: Number(raw.container_restart_total || 0),
       type: "Counter",
@@ -129,7 +124,6 @@ export function normalizeSecurityMetrics(raw: Record<string, any> = {}): Securit
     },
     {
       key: "high_cpu_process_count",
-      field: "security_high_cpu_process_count",
       title: "高 CPU 进程数量",
       value: Number(raw.high_cpu_process_count || 0),
       type: "Gauge",
@@ -138,7 +132,6 @@ export function normalizeSecurityMetrics(raw: Record<string, any> = {}): Securit
     },
     {
       key: "security_risk_score",
-      field: "security_risk_score",
       title: "安全风险分数",
       value: Number(raw.security_risk_score || 0),
       type: "Gauge",
@@ -152,21 +145,21 @@ export function normalizeGrafanaDashboards(raw: any): DashboardViewModel[] {
   const dashboards = raw?.dashboards || [];
   const fallbackPanels: Record<string, DashboardViewModel["panels"]> = {
     "Host Dashboard": [
-      { title: "CPU 使用率", type: "timeseries", expr: "100 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[2m])) * 100", description: "展示主机 CPU 忙碌程度。" },
-      { title: "内存使用率", type: "gauge", expr: "node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes", description: "展示主机内存使用情况。" },
-      { title: "磁盘使用率", type: "gauge", expr: "node_filesystem_avail_bytes / node_filesystem_size_bytes", description: "展示磁盘空间占用情况。" },
+      { title: "CPU 使用率", type: "折线图", description: "展示主机 CPU 忙碌程度。" },
+      { title: "内存使用率", type: "仪表盘", description: "展示主机内存使用情况。" },
+      { title: "磁盘使用率", type: "仪表盘", description: "展示磁盘空间占用情况。" },
     ],
     "Container Dashboard": [
-      { title: "容器 CPU 使用率", type: "timeseries", expr: "rate(container_cpu_usage_seconds_total{name!=\"\"}[2m])", description: "展示容器 CPU 消耗。" },
-      { title: "容器内存使用", type: "timeseries", expr: "container_memory_usage_bytes{name!=\"\"}", description: "展示容器内存占用。" },
+      { title: "容器 CPU 使用率", type: "折线图", description: "展示容器 CPU 消耗。" },
+      { title: "容器内存使用", type: "折线图", description: "展示容器内存占用。" },
     ],
     "Service Dashboard": [
-      { title: "服务可用性", type: "stat", expr: "probe_success", description: "展示 blackbox 探测是否成功。" },
-      { title: "HTTP 错误请求", type: "timeseries", expr: "increase(demo_http_requests_total{status=~\"5..\"}[5m])", description: "展示 demo-app 错误请求增长。" },
+      { title: "服务可用性", type: "状态卡", description: "展示 blackbox 探测是否成功。" },
+      { title: "HTTP 错误请求", type: "折线图", description: "展示 demo-app 错误请求增长。" },
     ],
     "Security Dashboard": [
-      { title: "失败登录次数", type: "stat", expr: "security_failed_login_total", description: "展示模拟失败登录次数。" },
-      { title: "安全风险分数", type: "gauge", expr: "security_risk_score", description: "展示整体安全风险等级。" },
+      { title: "失败登录次数", type: "状态卡", description: "展示模拟失败登录次数。" },
+      { title: "安全风险分数", type: "仪表盘", description: "展示整体安全风险等级。" },
     ],
   };
 
@@ -177,14 +170,13 @@ export function normalizeGrafanaDashboards(raw: any): DashboardViewModel[] {
       name: dashboardDisplayName(rawName),
       purpose: dashboard.purpose || dashboardPurpose(rawName),
       datasource: "Prometheus",
-      metrics: panels.flatMap((panel: any) => (panel.expr ? [panel.expr] : (panel.targets || []).map((target: any) => target.expr))).filter(Boolean).slice(0, 4),
+      metrics: panels.map((panel: any) => panel.title || "监控面板").slice(0, 4),
       panelCount: panels.length,
       url: dashboard.url || "http://127.0.0.1:3000/dashboards",
       panels: panels.map((panel: any) => ({
         title: panel.title || "未命名面板",
         type: panel.type || "panel",
-        expr: panel.expr || panel.targets?.[0]?.expr || "暂无 PromQL",
-        description: panel.description || describePromql(panel.expr || panel.targets?.[0]?.expr || ""),
+        description: panel.description || panelPurpose(panel.title || ""),
       })),
       raw: dashboard,
     };
@@ -207,10 +199,11 @@ function dashboardDisplayName(name: string): string {
   return name;
 }
 
-function describePromql(expr: string): string {
-  if (expr.includes("probe_success")) return "服务可用性探测结果，1 表示成功，0 表示失败。";
-  if (expr.includes("security_risk_score")) return "模拟安全风险评分。";
-  if (expr.includes("container")) return "容器资源或状态指标。";
-  if (expr.includes("node_")) return "主机资源指标。";
-  return "Prometheus 查询表达式。";
+function panelPurpose(title: string): string {
+  if (title.includes("CPU")) return "展示 CPU 使用情况。";
+  if (title.includes("内存")) return "展示内存使用情况。";
+  if (title.includes("磁盘")) return "展示磁盘空间占用情况。";
+  if (title.includes("服务")) return "展示服务可用性。";
+  if (title.includes("安全")) return "展示安全风险变化。";
+  return "展示课程设计中的监控指标。";
 }

@@ -131,7 +131,7 @@ Dashboard 应使用 Prometheus 数据源，并展示中文面板标题。
 4. Alertmanager 未配置真实邮件、企业微信或钉钉通知，课程演示以页面展示为主。
 5. Docker Desktop / WSL2 / Windows 代理可能影响 `localhost` 访问，建议使用 `127.0.0.1`。
 
-## 答辩亮点
+## 项目亮点
 
 1. Docker Compose 一键启动完整监控告警系统。
 2. Prometheus 同时实现静态服务发现和文件型动态服务发现。
