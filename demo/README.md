@@ -2,7 +2,7 @@
 
 本目录用于生成 SecureMonitor OS 课程项目报告展示视频，不修改项目核心业务代码。
 
-当前最终版视频为 `demo/project_demo.mp4`，时长约 6 分半，已经完成 WebM 到 MP4 转换，并内嵌中文字幕。
+当前最终版视频为 `demo/project_demo.mp4`，时长约 6 分半，已经完成 WebM 到 MP4 转换，并内嵌中文字幕。视频开头使用 Windows 本机真实 `cmd.exe` / Windows Terminal 录屏展示启动命令，不使用网页模拟终端。
 
 ## 文件说明
 
@@ -33,7 +33,10 @@ cd C:\Users\52697\secure-monitor
 docker compose up -d
 $env:NODE_PATH="C:\Users\52697\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\node_modules\.pnpm\playwright@1.60.0\node_modules;C:\Users\52697\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\node_modules\.pnpm\playwright-core@1.60.0\node_modules"
 C:\Users\52697\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe .\demo\record_demo.js
+.\demo\replace_intro_with_real_cmd.ps1
 ```
+
+`record_demo.js` 负责录制前端、Grafana 和异常模拟主流程；`replace_intro_with_real_cmd.ps1` 会打开真实 Windows 命令行窗口，录制 `docker compose up -d` 和 `docker compose ps`，并替换视频前 18 秒。
 
 ## 修改字幕
 

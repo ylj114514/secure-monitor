@@ -1307,7 +1307,7 @@ demo/project_demo.mp4
 
 该视频已经由 Playwright 自动录制并通过 ffmpeg 转换为 MP4，画面内嵌中文字幕，时长约 6 分半。演示流程不是只浏览静态页面，而是完整覆盖以下内容：
 
-1. 项目启动命令开场：展示 `cd C:\Users\52697\secure-monitor`、`docker compose up -d`、`docker compose ps` 和主界面地址 `http://127.0.0.1:7001`。
+1. 项目启动命令开场：使用 Windows 本机真实 `cmd.exe` / Windows Terminal 录屏展示 `cd C:\Users\52697\secure-monitor`、`docker compose up -d`、`docker compose ps` 和主界面地址 `http://127.0.0.1:7001`。
 2. SecureMonitor OS 总览、主机监控、容器监控、服务探测、Targets、安全中心、告警中心、告警规则、验收清单、Grafana 和 Kubernetes 页面。
 3. Grafana 真实 Dashboard 展示：主机大屏显示 Windows 本机指标，容器大屏切换真实 Docker 容器监控对象，安全大屏展示 security_exporter 指标。
 4. 异常模拟实操：逐个点击失败登录、可疑请求、风险分数、开放端口、高 CPU 进程、容器重启、服务宕机命令和恢复命令按钮。

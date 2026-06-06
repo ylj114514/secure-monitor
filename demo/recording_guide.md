@@ -51,7 +51,13 @@ docker compose up -d
 docker compose ps
 ```
 
-录制脚本会在生成开场画面前实际执行一次 `docker compose up -d` 和 `docker compose ps`，把当前服务启动结果写入终端画面，随后再进入 `http://127.0.0.1:7001` 展示前端。
+最终版提交视频使用真实 Windows 命令行窗口作为开场，不使用网页模拟终端。先运行 `record_demo.js` 生成完整前端演示，再运行：
+
+```powershell
+.\demo\replace_intro_with_real_cmd.ps1
+```
+
+该脚本会打开本机 `cmd.exe` / Windows Terminal 窗口，录制 `docker compose up -d` 和 `docker compose ps` 的真实执行画面，然后替换 `demo/project_demo.mp4` 的前 18 秒。
 
 ## 6. 鼠标说明
 
