@@ -3,7 +3,6 @@ import { BarChart3, ExternalLink } from "lucide-react";
 import { api } from "../api/client";
 import EmptyState from "../components/EmptyState";
 import ErrorState from "../components/ErrorState";
-import RawDataDrawer from "../components/RawDataDrawer";
 import { normalizeGrafanaDashboards } from "../utils/normalizers";
 
 function publicGrafanaUrl(url?: string) {
@@ -70,7 +69,7 @@ export default function GrafanaPage() {
           <h3>Grafana 可视化入口</h3>
           <p>
             Grafana 用来把 Prometheus 采集到的监控指标转换为仪表盘。这里展示的是课程演示入口，
-            主界面只保留中文说明和面板用途，具体查询配置放在开发者原始数据中。
+            主界面只保留中文说明、面板用途和展示建议，避免把查询配置直接暴露给项目报告展示观看者。
           </p>
           <p className="muted">默认账号密码：admin / admin。建议项目报告展示时从这里进入对应 Dashboard 截图。</p>
         </div>
@@ -120,7 +119,7 @@ export default function GrafanaPage() {
                 <a className="ghost-button" href={dashboard.url} target="_blank" rel="noreferrer">
                   打开这个 Dashboard <ExternalLink size={14} />
                 </a>
-                <RawDataDrawer title="查看 Dashboard 开发者原始数据" data={dashboard.raw} />
+                <span className="status-badge ok">面板内容已展开</span>
               </div>
             </article>
           ))}

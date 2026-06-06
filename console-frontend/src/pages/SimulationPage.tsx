@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { api } from "../api/client";
 import CommandButton from "../components/CommandButton";
-import RawDataDrawer from "../components/RawDataDrawer";
 import StatusBadge from "../components/StatusBadge";
 import { emitGlobalRefresh } from "../utils/refreshEvents";
 
@@ -12,10 +11,9 @@ type Result = {
   metric: string;
   alert: string;
   recovery?: string;
-  raw?: unknown;
 };
 
-type ActionConfig = Omit<Result, "ok" | "message" | "raw"> & {
+type ActionConfig = Omit<Result, "ok" | "message"> & {
   successMessage?: string;
 };
 
@@ -28,12 +26,11 @@ export default function SimulationPage() {
   async function run(config: ActionConfig, action: () => Promise<any>) {
     setRunning(config.title);
     try {
-      const raw = await action();
+      const response = await action();
       setResult({
         ...config,
         ok: true,
-        message: raw?.message || config.successMessage || `操作已完成。${scrapeHint}`,
-        raw,
+        message: response?.message || config.successMessage || `操作已完成。${scrapeHint}`,
       });
       emitGlobalRefresh();
       emitGlobalRefresh(3000);
@@ -222,7 +219,16 @@ export default function SimulationPage() {
                 <strong>{result.recovery || "等待指标恢复正常。"}</strong>
               </div>
             </div>
-            {result.raw !== undefined && <RawDataDrawer title="查看接口原始返回" data={result.raw} />}
+            <div className="explain-grid">
+              <div>
+                <span>演示意义</span>
+                <p>该操作用于把安全或服务异常转化为可观察指标，证明监控链路可以响应变化。</p>
+              </div>
+              <div>
+                <span>后续展示</span>
+                <p>等待下一轮抓取后，可切换到安全中心、告警中心或 Grafana 查看变化结果。</p>
+              </div>
+            </div>
           </div>
         ) : (
           <p className="muted">尚未执行模拟操作。点击上方卡片后，这里会显示影响内容、可能触发的告警和恢复方式。</p>

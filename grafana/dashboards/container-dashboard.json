@@ -5,21 +5,21 @@
   "tags": ["SecureMonitor", "容器监控", "cAdvisor"],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 3,
+  "version": 5,
   "refresh": "15s",
   "templating": {
     "list": [
       {
         "type": "query",
-        "name": "container",
-        "label": "容器名称",
+        "name": "container_id",
+        "label": "监控对象",
         "datasource": {"type": "prometheus", "uid": "prometheus"},
-        "query": "label_values(container_memory_usage_bytes{name!=\"\"}, name)",
+        "query": "label_values(container_memory_usage_bytes{id=~\"/docker/.+\"}, id)",
         "refresh": 1,
         "sort": 1,
         "multi": false,
         "includeAll": false,
-        "current": {"selected": false, "text": "secure-monitor-prometheus", "value": "secure-monitor-prometheus"}
+        "current": {"selected": false, "text": "自动选择 Docker 容器", "value": ""}
       }
     ]
   },
@@ -37,10 +37,10 @@
     {
       "type": "timeseries",
       "title": "容器 CPU 使用率",
-      "description": "通过顶部“容器名称”选择要观察的容器，避免多个容器曲线混杂。",
+      "description": "通过顶部“监控对象”切换要观察的 SecureMonitor 容器，演示时可以在后端、前端、Prometheus 等进程/服务容器之间切换。",
       "gridPos": {"x": 0, "y": 4, "w": 24, "h": 8},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "rate(container_cpu_usage_seconds_total{name=\"$container\"}[2m]) * 100", "legendFormat": "CPU $container"}],
+      "targets": [{"refId": "A", "expr": "rate(container_cpu_usage_seconds_total{id=\"$container_id\"}[2m]) * 100", "legendFormat": "CPU $container_id"}],
       "fieldConfig": {"defaults": {"unit": "percent", "min": 0}, "overrides": []},
       "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}
     },
@@ -50,7 +50,7 @@
       "description": "展示所选容器的内存占用。",
       "gridPos": {"x": 0, "y": 12, "w": 24, "h": 8},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "container_memory_usage_bytes{name=\"$container\"}", "legendFormat": "内存 $container"}],
+      "targets": [{"refId": "A", "expr": "container_memory_usage_bytes{id=\"$container_id\"}", "legendFormat": "内存 $container_id"}],
       "fieldConfig": {"defaults": {"unit": "bytes", "min": 0}, "overrides": []},
       "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}
     },
@@ -61,8 +61,8 @@
       "gridPos": {"x": 0, "y": 20, "w": 24, "h": 9},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
       "targets": [
-        {"refId": "A", "expr": "rate(container_network_receive_bytes_total{name=\"$container\"}[2m])", "legendFormat": "接收 $container"},
-        {"refId": "B", "expr": "rate(container_network_transmit_bytes_total{name=\"$container\"}[2m])", "legendFormat": "发送 $container"}
+        {"refId": "A", "expr": "rate(container_network_receive_bytes_total{id=\"$container_id\"}[2m])", "legendFormat": "接收 $container_id"},
+        {"refId": "B", "expr": "rate(container_network_transmit_bytes_total{id=\"$container_id\"}[2m])", "legendFormat": "发送 $container_id"}
       ],
       "fieldConfig": {"defaults": {"unit": "Bps", "min": 0}, "overrides": []},
       "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}

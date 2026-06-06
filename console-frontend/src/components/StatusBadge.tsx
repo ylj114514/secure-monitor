@@ -7,7 +7,7 @@ function toneOf(status?: string | boolean, ok?: boolean): StatusTone {
   if (typeof ok === "boolean") return ok ? "ok" : "bad";
   const value = String(status || "unknown").toLowerCase();
   if (["up", "healthy", "ok", "success", "active", "normal"].includes(value)) return "ok";
-  if (["warning", "pending", "warn", "firing"].includes(value)) return "warn";
+  if (["warning", "pending", "warn", "firing", "degraded"].includes(value)) return "warn";
   if (["down", "error", "critical", "failed", "failure"].includes(value)) return "bad";
   return "unknown";
 }

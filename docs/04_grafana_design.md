@@ -72,3 +72,9 @@ increase(security_failed_login_total[5m])
 ## 项目报告展示作用
 
 Grafana 是项目报告展示中最直观的展示入口。可以依次打开四类 Dashboard，说明 Prometheus 指标如何从采集、存储、查询最终转化为可视化图表。实际截图待本地启动后在 Grafana 页面验证。
+
+## 本机路径与监控对象切换
+
+在 Windows + Docker Desktop 环境中，node_exporter 会同时暴露 Linux 虚拟机、Docker Desktop 节点和 Windows 宿主机盘符路径。主机 Dashboard 的“本机磁盘”变量在界面上显示为“Windows 本机 C 盘 / Windows 本机 D 盘”，内部再映射到 Docker Desktop 可查询的真实挂载点，例如 `/run/desktop/mnt/host/c`。这样既保证 PromQL 能查到数据，也避免项目展示时先出现 `/`、`/run/desktop`、`/parent-distro` 等节点内部路径。
+
+容器 Dashboard 的“监控对象”变量使用 cAdvisor 当前暴露的 Docker 容器 `id`。演示视频脚本会从 Prometheus 查询两个真实容器 ID，并切换变量值，使 Grafana 展示不同被监控服务容器的 CPU、内存和网络曲线。

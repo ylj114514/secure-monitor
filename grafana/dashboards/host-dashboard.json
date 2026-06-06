@@ -5,7 +5,7 @@
   "tags": ["SecureMonitor", "主机监控", "node_exporter"],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 3,
+  "version": 6,
   "refresh": "15s",
   "templating": {
     "list": [
@@ -22,16 +22,20 @@
         "current": {"selected": false, "text": "node-exporter:9100", "value": "node-exporter:9100"}
       },
       {
-        "type": "query",
+        "type": "custom",
         "name": "mountpoint",
-        "label": "磁盘挂载点",
+        "label": "本机磁盘",
         "datasource": {"type": "prometheus", "uid": "prometheus"},
-        "query": "label_values(node_filesystem_size_bytes{instance=\"$instance\",fstype!~\"tmpfs|overlay|squashfs|nsfs|proc|sysfs|devtmpfs\"}, mountpoint)",
-        "refresh": 1,
+        "query": "Windows 本机 C 盘 : /run/desktop/mnt/host/c, Windows 本机 D 盘 : /run/desktop/mnt/host/d",
+        "refresh": 0,
         "sort": 1,
         "multi": false,
         "includeAll": false,
-        "current": {"selected": false, "text": "/", "value": "/"}
+        "options": [
+          {"selected": true, "text": "Windows 本机 C 盘", "value": "/run/desktop/mnt/host/c"},
+          {"selected": false, "text": "Windows 本机 D 盘", "value": "/run/desktop/mnt/host/d"}
+        ],
+        "current": {"selected": true, "text": "Windows 本机 C 盘", "value": "/run/desktop/mnt/host/c"}
       },
       {
         "type": "query",
@@ -95,10 +99,10 @@
     {
       "type": "timeseries",
       "title": "磁盘使用率",
-      "description": "通过顶部“磁盘挂载点”下拉框选择要展示的挂载点，避免一次性显示大量磁盘曲线。",
+      "description": "通过顶部“本机磁盘”下拉框选择要展示的宿主机盘符。界面显示 Windows 本机 C/D 盘，内部查询值映射到 Docker Desktop 暴露的真实挂载点。",
       "gridPos": {"x": 0, "y": 20, "w": 24, "h": 8},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"refId": "A", "expr": "(1 - (node_filesystem_avail_bytes{instance=\"$instance\",mountpoint=\"$mountpoint\",fstype!~\"tmpfs|overlay|squashfs|nsfs|proc|sysfs|devtmpfs\"} / node_filesystem_size_bytes{instance=\"$instance\",mountpoint=\"$mountpoint\",fstype!~\"tmpfs|overlay|squashfs|nsfs|proc|sysfs|devtmpfs\"})) * 100", "legendFormat": "磁盘使用率 $mountpoint"}],
+      "targets": [{"refId": "A", "expr": "(1 - (node_filesystem_avail_bytes{instance=\"$instance\",mountpoint=\"$mountpoint\",fstype!~\"tmpfs|overlay|squashfs|nsfs|proc|sysfs|devtmpfs\"} / node_filesystem_size_bytes{instance=\"$instance\",mountpoint=\"$mountpoint\",fstype!~\"tmpfs|overlay|squashfs|nsfs|proc|sysfs|devtmpfs\"})) * 100", "legendFormat": "磁盘使用率 Windows 本机磁盘"}],
       "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
       "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}
     },

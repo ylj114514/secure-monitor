@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { api } from "../api/client";
 import EmptyState from "../components/EmptyState";
 import ErrorState from "../components/ErrorState";
-import RawDataDrawer from "../components/RawDataDrawer";
 import StatusBadge from "../components/StatusBadge";
 import { riskLevel } from "../utils/formatters";
 import { normalizeSecurityMetrics } from "../utils/normalizers";
@@ -26,14 +25,15 @@ const actionMap: Record<string, string> = {
 
 export default function SecurityCenterPage() {
   const [metrics, setMetrics] = useState<any>({});
+  const [overview, setOverview] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   async function loadSecurity() {
-    api
-      .security()
-      .then((data) => {
+    Promise.all([api.security(), api.overview()])
+      .then(([data, overviewData]) => {
         setMetrics(data || {});
+        setOverview(overviewData || {});
         setError(false);
       })
       .catch(() => setError(true))
@@ -53,6 +53,8 @@ export default function SecurityCenterPage() {
   const items = useMemo(() => normalizeSecurityMetrics(metrics), [metrics]);
   const riskValue = Number(metrics.security_risk_score || 0);
   const risk = riskLevel(riskValue);
+  const comprehensiveRisk = overview.comprehensive_risk || {};
+  const comprehensiveStatus = comprehensiveRisk.status || "ok";
   const normalItems = items.filter((item) => item.key !== "security_risk_score");
 
   if (error) {
@@ -105,6 +107,22 @@ export default function SecurityCenterPage() {
         </p>
       </section>
 
+      <section className="panel comprehensive-risk-panel">
+        <div className="panel-title-row">
+          <h3>综合风险评分</h3>
+          <StatusBadge status={comprehensiveStatus} label={comprehensiveRisk.label || "低风险"} />
+        </div>
+        <div className="comprehensive-risk-score">
+          <strong>{Number(comprehensiveRisk.score ?? 0).toFixed(1)}</strong>
+          <span>分</span>
+        </div>
+        <div className="risk-reason-list">
+          {(comprehensiveRisk.reasons || ["核心组件、采集目标和模拟安全指标均处于较稳定状态。"]).map((reason: string) => (
+            <span key={reason}>{reason}</span>
+          ))}
+        </div>
+      </section>
+
       {loading ? (
         <EmptyState title="正在加载安全指标" description="请稍等，系统正在从后端读取 security_exporter 指标。" />
       ) : (
@@ -114,7 +132,7 @@ export default function SecurityCenterPage() {
               <div className="security-metric-main">
                 <div className="security-metric-title">
                   <h3>{item.title}</h3>
-                  <span>{item.type}</span>
+                  <span>{item.type === "Counter" ? "累计指标" : "当前状态"}</span>
                 </div>
                 <p>{item.description}</p>
                 <div className="security-metric-meta">
@@ -134,10 +152,23 @@ export default function SecurityCenterPage() {
       <section className="panel security-alert-note">
         <h3>安全指标如何用于告警</h3>
         <p>
-          Prometheus 会根据 security_alerts.yml 中的规则判断失败登录增长、可疑请求增长、开放端口数量和安全风险分数是否超过阈值。
-          满足条件后，告警会发送到 Alertmanager，并在告警中心和右侧通知栏展示。
+          Prometheus 会持续观察失败登录、可疑请求、开放端口数量和安全风险分数等指标。
+          当某项风险超过项目设定阈值时，告警会发送到 Alertmanager，并在告警中心和右侧通知栏展示。
         </p>
-        <RawDataDrawer title="查看开发者原始安全指标数据" data={metrics} />
+        <div className="explain-grid">
+          <div>
+            <span>采集来源</span>
+            <p>security_exporter 输出课程演示用安全指标，不读取真实隐私或敏感日志。</p>
+          </div>
+          <div>
+            <span>展示重点</span>
+            <p>失败登录、可疑请求、开放端口和风险分数可以通过异常模拟页触发变化。</p>
+          </div>
+          <div>
+            <span>报告结论</span>
+            <p>本页证明安全指标可以被采集、汇总、评分，并联动到 Prometheus 告警流程。</p>
+          </div>
+        </div>
       </section>
     </div>
   );

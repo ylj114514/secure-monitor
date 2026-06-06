@@ -55,7 +55,9 @@ class PrometheusService:
                 "instance": target.get("labels", {}).get("instance", ""),
                 "health": target.get("health", "unknown"),
                 "last_scrape": target.get("lastScrape", ""),
+                "scrape_duration": target.get("lastScrapeDuration", 0),
                 "scrape_url": target.get("scrapeUrl", ""),
+                "last_error": target.get("lastError", ""),
                 "labels": target.get("labels", {}),
             }
             for target in active

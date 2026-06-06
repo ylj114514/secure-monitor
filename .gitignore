@@ -21,3 +21,18 @@ Thumbs.db
 # Node frontend dependencies and build outputs
 node_modules/
 dist/
+
+# Demo recording scratch files
+demo/raw-video/
+demo/check_*.png
+demo/final_*.png
+demo/frontend_*_check*.png
+demo/video_*_check*.png
+demo/rerender_*.png
+demo/ui_fix_*.png
+demo/verification/
+demo/project_demo.webm
+demo/frontend_targets_detail_final.png
+demo/grafana_login_test.png
+demo/playback_check.png
+scripts/record_demo_video.js

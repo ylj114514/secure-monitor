@@ -1,5 +1,4 @@
 import InfoCard from "../components/InfoCard";
-import RawDataDrawer from "../components/RawDataDrawer";
 
 const resources = [
   {
@@ -66,51 +65,6 @@ const components = [
   },
 ];
 
-const rawYaml = `apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: securemonitor-demo-app
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: demo-app
-  template:
-    metadata:
-      labels:
-        app: demo-app
-    spec:
-      containers:
-        - name: demo-app
-          image: demo-app:latest
-          ports:
-            - containerPort: 5000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: demo-app
-spec:
-  selector:
-    app: demo-app
-  ports:
-    - name: http
-      port: 5000
-      targetPort: 5000
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: demo-app-monitor
-spec:
-  selector:
-    matchLabels:
-      app: demo-app
-  endpoints:
-    - port: http
-      path: /metrics
-      interval: 15s`;
-
 export default function KubernetesResearchPage() {
   return (
     <div className="page-stack">
@@ -167,7 +121,23 @@ export default function KubernetesResearchPage() {
           Docker Compose 版本使用 static_configs 和 file_sd_configs 发现目标；Kubernetes 版本更适合使用
           ServiceMonitor 和 PodMonitor，由 Prometheus Operator 根据资源标签自动维护抓取目标。
         </p>
-        <RawDataDrawer title="查看 Kubernetes 示例 YAML" data={rawYaml} language="yaml" />
+        <div className="flow-strip">
+          <div><strong>Deployment</strong><span>管理业务副本</span></div>
+          <div><strong>Service</strong><span>提供稳定访问入口</span></div>
+          <div><strong>ServiceMonitor</strong><span>声明监控抓取规则</span></div>
+          <div><strong>Prometheus</strong><span>自动发现并采集指标</span></div>
+          <div><strong>Grafana / Alertmanager</strong><span>展示趋势并处理告警</span></div>
+        </div>
+        <div className="explain-grid">
+          <div>
+            <span>研究结论</span>
+            <p>Kubernetes 部分用于说明扩展方案，Docker Compose 仍是当前项目可运行的主实现。</p>
+          </div>
+          <div>
+            <span>展示重点</span>
+            <p>项目报告展示时说明资源对象之间的关系，而不是直接展示配置文件正文。</p>
+          </div>
+        </div>
       </section>
     </div>
   );

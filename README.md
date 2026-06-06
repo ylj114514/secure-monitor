@@ -470,6 +470,10 @@ Grafana 是第三方开源可视化软件，本项目没有自己重新实现 Gr
 5. Grafana 自动加载 Dashboard JSON。
 6. Dashboard 通过 Prometheus 数据源查询指标。
 
+主机监控 Dashboard 的“本机磁盘”变量在界面上显示为“Windows 本机 C 盘 / Windows 本机 D 盘”，内部再映射到 Docker Desktop 可查询的真实挂载点，例如 `/run/desktop/mnt/host/c`。这样既保证 PromQL 能查到数据，也避免打开 Grafana 时先把 `/`、`/run/desktop`、`/parent-distro` 等 Docker Desktop 节点内部路径直接展示给观看者。
+
+容器监控 Dashboard 的“监控对象”变量使用 cAdvisor 当前实际暴露的 Docker cgroup `id`。录制脚本会从 Prometheus 动态取两个真实容器 ID，并在 Grafana 段切换监控对象，展示同一组 CPU、内存、网络面板在不同容器上的变化。
+
 对应挂载关系：
 
 ```yaml
@@ -1179,6 +1183,7 @@ docker compose up -d --build
 | `docs/09_test_report.md` | 测试报告模板 |
 | `docs/10_project_script.md` | 项目说明稿和老师可能提问 |
 | `docs/course_report_outline.md` | 课程设计报告大纲 |
+| `docs/course_report_template_filling_notes.md` | 按老师模板整理项目报告的填写说明 |
 | `docs/report_format_reference.md` | 课程报告参考样例格式总结 |
 
 ## 18. 项目报告展示可以强调的亮点
@@ -1232,7 +1237,7 @@ docker compose ps
 | 安全监控指标 | security_exporter 暴露模拟安全指标，安全中心显示失败登录、可疑请求、风险分数等 | `exporters/security_exporter/app.py` | `securemonitor-security-before.png`、`securemonitor-security-after.png` |
 | 告警规则和 Alertmanager | Prometheus Alerts 页面和 SecureMonitor OS 告警中心能展示告警，Alertmanager 能访问 | `prometheus/rules/*.yml`、`alertmanager/alertmanager.yml` | `prometheus-alerts.png`、`securemonitor-alerts.png`、`alertmanager.png` |
 | Grafana 数据源和 Dashboard | Grafana 中 Prometheus 数据源存在，主机、容器、服务、安全 Dashboard 可访问 | `grafana/provisioning/`、`grafana/dashboards/*.json` | `grafana-datasource.png`、`grafana-host-dashboard.png` |
-| Kubernetes 监控研究 | 项目材料中说明 Node、Pod、Service、Deployment 的监控方式和 ServiceMonitor / PodMonitor 作用 | `docs/k8s_pod_service_monitoring_mapping.md`、`k8s/*.yaml` | `securemonitor-kubernetes.png` |
+| Kubernetes 监控研究 | Kubernetes 页面和项目文档中说明 Node、Pod、Service、Deployment 的监控方式和 ServiceMonitor / PodMonitor 作用 | `docs/k8s_pod_service_monitoring_mapping.md`、`k8s/*.yaml` | `securemonitor-kubernetes.png` |
 | 测试计划和测试报告 | 测试用例齐全，实际运行后补充结果和截图 | `docs/08_test_plan.md`、`docs/09_test_report.md` | 按 `docs/screenshot_checklist.md` 补充 |
 
 推荐执行命令：
@@ -1252,3 +1257,70 @@ docker compose ps
 - Alertmanager：`http://127.0.0.1:9093`
 
 注意：Kubernetes 部分是扩展研究和可选实验，不能写成已经完成生产级 Kubernetes 部署。`security_exporter` 是课程设计模拟安全指标，不是生产级入侵检测系统。
+
+## 20. 代码层面补强接口
+
+本项目新增了几个用于课程提交前验收的接口和页面，帮助形成“课程要求 -> 项目实现 -> 配置文件 -> 页面截图 -> 测试结果 -> 报告章节”的证据链。
+
+| 功能 | 后端接口 | 前端入口 | 作用 |
+| --- | --- | --- | --- |
+| 课程要求验收清单 | `GET /api/course/checklist` | SecureMonitor OS 左侧 `验收清单` | 逐条映射老师要求、项目实现、证据文件、截图位置和完成状态 |
+| 告警规则说明中心 | `GET /api/alert-rules` | SecureMonitor OS 左侧 `告警规则` | 用中文解释主机、容器、服务、安全四类告警规则 |
+| 巡检报告导出 | `GET /api/report/inspection` | 后端 API 能力，供课程报告材料整理时调用 | 汇总 overview、targets、alerts、security metrics 和 Grafana 信息，导出 Markdown |
+| 综合风险评分 | `GET /api/overview` | `总览`、`安全中心` | 根据 CPU、内存、磁盘、异常 Targets、活跃告警、失败登录和安全风险分数计算综合风险 |
+
+## 21. 测试命令
+
+后端接口测试：
+
+```powershell
+cd C:\Users\52697\secure-monitor
+$env:PYTHONPATH="C:\Users\52697\secure-monitor\console-backend"
+C:\Users\52697\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe -m pytest console-backend\tests -q
+```
+
+前端构建测试：
+
+```powershell
+cd C:\Users\52697\secure-monitor\console-frontend
+npm run build
+```
+
+本次本地验证结果：
+
+| 测试项 | 命令 | 实际结果 |
+| --- | --- | --- |
+| 后端接口测试 | `python -m pytest console-backend\tests -q` | `4 passed in 0.49s` |
+| 前端构建测试 | `npm run build` | 构建通过；Vite 输出 chunk 体积提示，不影响运行 |
+| Docker Compose 重建启动 | `docker compose up -d --build` | 构建并启动成功，console-backend 与 console-frontend 已重新创建并启动 |
+| 新增接口运行态检查 | `/api/course/checklist`、`/api/alert-rules`、`/api/report/inspection`、`/api/overview` | 接口均可访问，overview 已返回 `targets_down`、`component_status`、`health_level`、`health_message` 和 `comprehensive_risk` |
+
+运行环境提示：系统自带 Python 3.9 不适合运行后端测试，因为项目使用了 Python 3.10+ 类型语法；上面的命令使用 Codex 工作区 Python 3.12。Docker 容器运行时仍使用 `console-backend/Dockerfile` 中的 `python:3.12-slim`。
+
+## 22. 最终演示视频与交付内容
+
+最终完整演示视频位于：
+
+```text
+demo/project_demo.mp4
+```
+
+该视频已经由 Playwright 自动录制并通过 ffmpeg 转换为 MP4，画面内嵌中文字幕，时长约 6 分钟。演示流程不是只浏览静态页面，而是完整覆盖以下内容：
+
+1. SecureMonitor OS 总览、主机监控、容器监控、服务探测、Targets、安全中心、告警中心、告警规则、验收清单、Grafana 和 Kubernetes 页面。
+2. Grafana 真实 Dashboard 展示：主机大屏显示 Windows 本机指标，容器大屏切换真实 Docker 容器监控对象，安全大屏展示 security_exporter 指标。
+3. 异常模拟实操：逐个点击失败登录、可疑请求、风险分数、开放端口、高 CPU 进程、容器重启、服务宕机命令和恢复命令按钮。
+4. 异常触发后的变化展示：安全中心指标升高、告警中心出现活跃告警、总览页综合风险变化、Grafana 安全大屏同步显示异常指标。
+
+相关演示材料：
+
+| 文件 | 作用 |
+| --- | --- |
+| `demo/project_demo.mp4` | 最终 MP4 演示视频 |
+| `demo/subtitles.srt` | 视频字幕时间轴 |
+| `demo/demo_plan.md` | 演示路线和页面覆盖计划 |
+| `demo/demo_script.md` | 分镜与讲解脚本 |
+| `demo/recording_guide.md` | 录制和转码说明 |
+| `demo/record_demo.js` | Playwright 自动录制脚本 |
+
+本次最终版同时修复了两个展示问题：主机监控页不再先闪过 `node_exporter / Docker Desktop WSL2 指标` 的旧默认内容；Grafana 主机大屏的磁盘变量对外显示为 Windows 本机磁盘，不直接暴露 Docker Desktop 内部挂载路径。

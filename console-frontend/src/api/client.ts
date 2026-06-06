@@ -11,11 +11,25 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return response.json();
 }
 
+async function requestText(path: string, options?: RequestInit): Promise<string> {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    headers: { ...(options?.headers || {}) },
+    ...options
+  });
+  if (!response.ok) {
+    throw new Error(`${response.status} ${response.statusText}`);
+  }
+  return response.text();
+}
+
 export const api = {
   health: () => request<{ status: string }>("/api/health"),
   overview: () => request<any>("/api/overview"),
   targets: () => request<{ targets: any[] }>("/api/targets"),
   alerts: () => request<any>("/api/alerts"),
+  alertRules: () => request<any>("/api/alert-rules"),
+  courseChecklist: () => request<any>("/api/course/checklist"),
+  inspectionReport: () => requestText("/api/report/inspection"),
   security: () => request<any>("/api/security/metrics"),
   grafana: () => request<any>("/api/grafana/info"),
   docs: () => request<any>("/api/docs/links"),

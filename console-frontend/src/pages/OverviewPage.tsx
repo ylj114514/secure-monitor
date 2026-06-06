@@ -38,7 +38,10 @@ export default function OverviewPage() {
 
   if (error) return <ErrorState />;
 
-  const risk = riskLevel(Number(overview.security_risk_score || 0));
+  const securityRisk = riskLevel(Number(overview.security_risk_score || 0));
+  const comprehensiveRisk = overview.comprehensive_risk || {};
+  const comprehensiveTone =
+    comprehensiveRisk.status === "critical" ? "bad" : comprehensiveRisk.status === "warning" ? "warn" : "good";
   const allTargetsUp = Boolean(overview.targets_total) && overview.targets_up === overview.targets_total;
   const activeAlerts = overview.active_alerts || alerts.length || 0;
   const cpu = Number(overview.cpu_usage || 0);
@@ -71,15 +74,33 @@ export default function OverviewPage() {
           <strong>{activeAlerts}</strong>
           <small>{activeAlerts ? "需要关注告警中心" : "暂无活跃告警"}</small>
         </div>
-        <div className={`kpi-card ${risk.tone}`}>
-          <span>安全风险</span>
-          <strong>{Number(overview.security_risk_score || 0).toFixed(0)}</strong>
-          <small>{risk.label}</small>
+        <div className={`kpi-card ${comprehensiveTone}`}>
+          <span>综合风险</span>
+          <strong>{Number(comprehensiveRisk.score ?? 0).toFixed(0)}</strong>
+          <small>{comprehensiveRisk.label || "低风险"}</small>
         </div>
         <div className="kpi-card good">
           <span>服务可用性</span>
           <strong>{allTargetsUp ? "正常" : "关注"}</strong>
           <small>基于 Prometheus Targets 判断</small>
+        </div>
+      </section>
+
+      <section className={`panel comprehensive-risk-panel ${comprehensiveTone}`}>
+        <div className="panel-title-row">
+          <h3>综合风险评分</h3>
+          <StatusBadge
+            status={comprehensiveRisk.status || "ok"}
+            label={comprehensiveRisk.label || "低风险"}
+          />
+        </div>
+        <p className="muted-text">
+          综合风险由 CPU、内存、磁盘、异常 Targets、活跃告警、失败登录次数和 security_exporter 风险分数共同计算。
+        </p>
+        <div className="risk-reason-list">
+          {(comprehensiveRisk.reasons || ["核心组件、采集目标和模拟安全指标均处于较稳定状态。"]).map((reason: string) => (
+            <span key={reason}>{reason}</span>
+          ))}
         </div>
       </section>
 
@@ -99,7 +120,7 @@ export default function OverviewPage() {
         <div className="panel compact-panel">
           <div className="panel-title-row">
             <h3>安全摘要</h3>
-            <StatusBadge status={risk.tone === "good" ? "ok" : risk.tone === "warn" ? "warning" : "critical"} label={risk.label} />
+            <StatusBadge status={securityRisk.tone === "good" ? "ok" : securityRisk.tone === "warn" ? "warning" : "critical"} label={securityRisk.label} />
           </div>
           <div className="security-summary-list">
             <SummaryRow label="失败登录" value={security.failed_login_total || 0} note="短时间增长过快可能表示暴力破解。" />

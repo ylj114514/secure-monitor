@@ -11,6 +11,7 @@
 5. Grafana 可以使用 Prometheus 作为数据源，并展示中文 Dashboard。
 6. SecureMonitor OS 可以作为统一可视化控制台展示监控、告警、安全指标、Grafana 入口和 Kubernetes 研究内容。
 7. Kubernetes 部分以研究文档和示例 YAML 形式体现扩展能力。
+8. 演示视频可以完整展示基础监控页面、Grafana Dashboard、异常模拟按钮实操和异常触发后的界面变化。
 
 ## 验收命令清单
 
@@ -122,6 +123,22 @@ Dashboard 应使用 Prometheus 数据源，并展示中文面板标题。
 | Grafana | Dashboard 入口和面板说明 |
 | 异常模拟 | 失败登录、安全风险分数、容器重启等模拟入口 |
 | Kubernetes | Kubernetes 监控研究说明 |
+
+## 演示视频验收
+
+最终演示视频文件：
+
+```text
+demo/project_demo.mp4
+```
+
+视频应覆盖以下验收点：
+
+1. 前半段展示系统基线：总览、主机监控、容器监控、服务探测、Targets、安全中心、告警中心、告警规则、验收清单、Grafana 和 Kubernetes。
+2. Grafana 主机大屏直接展示 Windows 本机指标，不再先闪过 Docker Desktop WSL2 指标；容器大屏会切换不同容器监控对象。
+3. 异常模拟部分会逐个点击失败登录、可疑请求、风险分数、开放端口、高 CPU 进程、容器重启、服务宕机命令和恢复命令按钮。
+4. 点击后展示安全中心指标变化、告警中心活跃告警、总览页综合风险变化和 Grafana 安全大屏变化。
+5. 服务宕机按钮只生成演示命令，不直接停止容器，符合课程演示安全边界。
 
 ## 风险项
 

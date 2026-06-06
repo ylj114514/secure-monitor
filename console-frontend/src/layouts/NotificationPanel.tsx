@@ -9,13 +9,21 @@ export default function NotificationPanel({
   overview: any;
 }) {
   const risk = riskLevel(Number(overview.security_risk_score || 0));
+  const systemLabel =
+    overview.system_status === "ok"
+      ? "正常"
+      : overview.system_status === "degraded"
+        ? "警告"
+        : overview.system_status === "critical"
+          ? "异常"
+          : "未知";
 
   return (
     <aside className="notification-panel">
       <h3>通知中心</h3>
       <div className="notice-card notice-card-row">
         <span>系统状态</span>
-        <StatusBadge status={overview.system_status || "unknown"} label={overview.system_status === "ok" ? "正常" : "未知"} />
+        <StatusBadge status={overview.system_status || "unknown"} label={systemLabel} />
       </div>
       <div className="notice-card">
         <div className="notice-card-row">

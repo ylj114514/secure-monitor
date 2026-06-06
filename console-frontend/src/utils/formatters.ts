@@ -30,9 +30,9 @@ export function statusText(value?: string | boolean): string {
   if (value === false) return "异常";
   const normalized = String(value || "unknown").toLowerCase();
   if (["up", "healthy", "ok", "success", "active", "normal"].includes(normalized)) return "正常";
-  if (["firing", "pending"].includes(normalized)) return "触发中";
+  if (["firing", "pending"].includes(normalized)) return "告警中";
   if (normalized === "resolved") return "已恢复";
-  if (["warning", "warn"].includes(normalized)) return "警告";
+  if (["warning", "warn", "degraded"].includes(normalized)) return "警告";
   if (normalized === "critical") return "严重";
   if (["down", "error", "failed", "failure"].includes(normalized)) return "异常";
   return "未知";

@@ -34,7 +34,7 @@
 | S16 | 安全中心模拟后 | `securemonitor-security-after.png` | 展示失败登录、安全风险等指标变化 | 待本地运行后填写 |
 | S17 | 告警中心 | `securemonitor-alerts.png` | 展示告警列表和严重等级 | 待本地运行后填写 |
 | S18 | 告警规则说明中心 | `securemonitor-alert-rules.png` | 展示告警规则中文说明 | 待本地运行后填写 |
-| S19 | 项目材料中心 | `securemonitor-materials.png` | 展示课程要求、测试计划、截图清单等材料入口 | 待本地运行后填写 |
+| S19 | 验收清单页面 | `securemonitor-checklist.png` | 展示课程要求、项目实现、证据文件和截图建议 | 待本地运行后填写 |
 | S20 | Kubernetes 研究页 | `securemonitor-kubernetes.png` | 展示 Kubernetes 扩展研究内容 | 待本地运行后填写 |
 
 ## Alertmanager 截图

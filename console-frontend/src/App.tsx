@@ -8,10 +8,10 @@ import TargetsPage from "./pages/TargetsPage";
 import SecurityCenterPage from "./pages/SecurityCenterPage";
 import AlertCenterPage from "./pages/AlertCenterPage";
 import AlertRulesPage from "./pages/AlertRulesPage";
+import CourseChecklistPage from "./pages/CourseChecklistPage";
 import GrafanaPage from "./pages/GrafanaPage";
 import SimulationPage from "./pages/SimulationPage";
 import KubernetesResearchPage from "./pages/KubernetesResearchPage";
-import DocsPage from "./pages/DocsPage";
 import { api } from "./api/client";
 import { normalizeAlerts } from "./utils/normalizers";
 import { onGlobalRefresh } from "./utils/refreshEvents";
@@ -25,10 +25,10 @@ const pages: Record<string, { title: string; component: JSX.Element }> = {
   security: { title: "安全中心", component: <SecurityCenterPage /> },
   alerts: { title: "告警中心", component: <AlertCenterPage /> },
   alertRules: { title: "告警规则说明", component: <AlertRulesPage /> },
+  checklist: { title: "课程验收清单", component: <CourseChecklistPage /> },
   grafana: { title: "Grafana 大屏", component: <GrafanaPage /> },
   simulation: { title: "异常模拟", component: <SimulationPage /> },
   kubernetes: { title: "Kubernetes 研究", component: <KubernetesResearchPage /> },
-  docs: { title: "项目材料中心", component: <DocsPage /> },
 };
 
 function pageFromHash() {
