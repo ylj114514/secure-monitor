@@ -2,7 +2,7 @@
 
 本目录用于生成 SecureMonitor OS 课程项目报告展示视频，不修改项目核心业务代码。
 
-当前最终版视频为 `demo/project_demo.mp4`，时长约 6 分钟，已经完成 WebM 到 MP4 转换，并内嵌中文字幕。
+当前最终版视频为 `demo/project_demo.mp4`，时长约 6 分半，已经完成 WebM 到 MP4 转换，并内嵌中文字幕。
 
 ## 文件说明
 
@@ -20,10 +20,11 @@
 
 最终版演示视频覆盖以下内容：
 
-1. SecureMonitor OS 总览、主机监控、容器监控、服务探测、Targets、安全中心、告警中心、告警规则、验收清单、Grafana、Kubernetes。
-2. Grafana 真实 Dashboard 展示，包括主机大屏、容器大屏和安全大屏；主机大屏显示 Windows 本机指标，容器大屏会切换真实 Docker 容器监控对象。
-3. 异常模拟实操，逐个点击失败登录、可疑请求、风险分数、开放端口、高 CPU 进程、容器重启、服务宕机命令和恢复命令按钮。
-4. 异常触发后的界面变化，包括安全中心指标变化、告警中心活跃告警、总览页风险变化和 Grafana 安全大屏变化。
+1. 开场展示项目启动命令：`cd C:\Users\52697\secure-monitor`、`docker compose up -d`、`docker compose ps` 和主界面地址。
+2. SecureMonitor OS 总览、主机监控、容器监控、服务探测、Targets、安全中心、告警中心、告警规则、验收清单、Grafana、Kubernetes。
+3. Grafana 真实 Dashboard 展示，包括主机大屏、容器大屏和安全大屏；主机大屏显示 Windows 本机指标，容器大屏会切换真实 Docker 容器监控对象。
+4. 异常模拟实操，逐个点击失败登录、可疑请求、风险分数、开放端口、高 CPU 进程、容器重启、服务宕机命令和恢复命令按钮。
+5. 异常触发后的界面变化，包括安全中心指标变化、告警中心活跃告警、总览页风险变化和 Grafana 安全大屏变化。
 
 ## 重新生成视频
 

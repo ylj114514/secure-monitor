@@ -5,8 +5,10 @@ const { chromium } = require("playwright");
 
 const outputDir = __dirname;
 const tempVideoDir = path.join(outputDir, "raw-video");
+const projectRoot = path.resolve(__dirname, "..");
 const appUrl = "http://127.0.0.1:7001";
 const viewport = { width: 1366, height: 768 };
+const startupIntroSeconds = 18;
 
 const scenes = [
   {
@@ -89,7 +91,7 @@ const scenes = [
   },
 ];
 
-const initialLoadSeconds = 5.2;
+const initialLoadSeconds = 4.8;
 const navigationTransitionSeconds = 0.45;
 
 function timestamp(seconds, comma = false) {
@@ -105,12 +107,13 @@ function timestamp(seconds, comma = false) {
 function makeVtt() {
   let cursor = 0;
   let out = "WEBVTT\n\n";
-  out += `1\n${timestamp(0)} --> ${timestamp(initialLoadSeconds)}\n演示准备：系统正在加载监控数据和 SecureMonitor OS 主界面。\n\n`;
-  cursor = initialLoadSeconds;
+  out += `1\n${timestamp(0)} --> ${timestamp(startupIntroSeconds)}\n项目启动命令：进入项目目录，执行 docker compose up -d 启动全部监控服务，再用 docker compose ps 核对容器状态。\n\n`;
+  out += `2\n${timestamp(startupIntroSeconds)} --> ${timestamp(startupIntroSeconds + initialLoadSeconds)}\n演示准备：启动命令展示完成，正在进入 SecureMonitor OS 主界面并加载实时监控数据。\n\n`;
+  cursor = startupIntroSeconds + initialLoadSeconds;
   scenes.forEach((scene, index) => {
     const start = cursor;
     const end = cursor + navigationTransitionSeconds + scene.seconds;
-    out += `${index + 2}\n${timestamp(start)} --> ${timestamp(end)}\n${scene.title}：${scene.text}\n\n`;
+    out += `${index + 3}\n${timestamp(start)} --> ${timestamp(end)}\n${scene.title}：${scene.text}\n\n`;
     cursor = end;
   });
   return out;
@@ -119,15 +122,244 @@ function makeVtt() {
 function makeSrt() {
   let cursor = 0;
   let out = "";
-  out += `1\n${timestamp(0, true)} --> ${timestamp(initialLoadSeconds, true)}\n演示准备：系统正在加载监控数据和 SecureMonitor OS 主界面。\n\n`;
-  cursor = initialLoadSeconds;
+  out += `1\n${timestamp(0, true)} --> ${timestamp(startupIntroSeconds, true)}\n项目启动命令：进入项目目录，执行 docker compose up -d 启动全部监控服务，再用 docker compose ps 核对容器状态。\n\n`;
+  out += `2\n${timestamp(startupIntroSeconds, true)} --> ${timestamp(startupIntroSeconds + initialLoadSeconds, true)}\n演示准备：启动命令展示完成，正在进入 SecureMonitor OS 主界面并加载实时监控数据。\n\n`;
+  cursor = startupIntroSeconds + initialLoadSeconds;
   scenes.forEach((scene, index) => {
     const start = cursor;
     const end = cursor + navigationTransitionSeconds + scene.seconds;
-    out += `${index + 2}\n${timestamp(start, true)} --> ${timestamp(end, true)}\n${scene.title}：${scene.text}\n\n`;
+    out += `${index + 3}\n${timestamp(start, true)} --> ${timestamp(end, true)}\n${scene.title}：${scene.text}\n\n`;
     cursor = end;
   });
   return out;
+}
+
+function runStartupCommand(command, args) {
+  try {
+    return execFileSync(command, args, {
+      cwd: projectRoot,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    }).trim();
+  } catch (error) {
+    const stdout = error.stdout ? String(error.stdout).trim() : "";
+    const stderr = error.stderr ? String(error.stderr).trim() : "";
+    return [stdout, stderr, `命令退出码：${error.status ?? "unknown"}`]
+      .filter(Boolean)
+      .join("\n");
+  }
+}
+
+function shortenTerminalOutput(text, maxLines = 18) {
+  const lines = String(text || "")
+    .replace(/\r/g, "")
+    .split("\n")
+    .filter((line) => line.trim().length > 0);
+  if (lines.length <= maxLines) {
+    return lines.join("\n");
+  }
+  const head = lines.slice(0, Math.ceil(maxLines / 2));
+  const tail = lines.slice(-Math.floor(maxLines / 2));
+  return [...head, `... 省略 ${lines.length - maxLines} 行，完整状态以 docker compose ps 为准 ...`, ...tail].join("\n");
+}
+
+function getStartupTranscript() {
+  return {
+    composeUpOutput: shortenTerminalOutput(
+      runStartupCommand("docker", ["compose", "up", "-d"]),
+      14,
+    ),
+    composePsOutput: shortenTerminalOutput(
+      runStartupCommand("docker", ["compose", "ps"]),
+      18,
+    ),
+  };
+}
+
+async function showStartupIntro(page, transcript) {
+  const escapedUp = escapeHtml(transcript.composeUpOutput || "服务已处于 Running 状态。");
+  const escapedPs = escapeHtml(transcript.composePsOutput || "docker compose ps 已执行。");
+  await page.setContent(
+    `<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SecureMonitor OS 启动命令</title>
+<style>
+  :root { color-scheme: dark; }
+  body {
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #0f141d;
+    color: #e8edf7;
+    font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+  }
+  .wrap {
+    height: 100vh;
+    box-sizing: border-box;
+    padding: 34px 44px 118px;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 28px;
+    align-items: stretch;
+  }
+  .intro {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+  }
+  h1 {
+    margin: 0 0 18px;
+    font-size: 34px;
+    line-height: 1.18;
+    letter-spacing: 0;
+  }
+  .lead {
+    margin: 0 0 22px;
+    color: #b8c4d8;
+    font-size: 19px;
+    line-height: 1.7;
+  }
+  .steps {
+    display: grid;
+    gap: 12px;
+  }
+  .step {
+    border: 1px solid #2d3748;
+    background: #161d29;
+    border-radius: 8px;
+    padding: 13px 15px;
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  .num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #58d5c9;
+    color: #08111a;
+    font-weight: 800;
+    display: grid;
+    place-items: center;
+  }
+  .step strong { display: block; margin-bottom: 4px; font-size: 16px; }
+  .step span { color: #aeb9cc; line-height: 1.55; font-size: 14px; }
+  .terminal {
+    min-width: 0;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    background: #070b12;
+    box-shadow: 0 24px 80px rgba(0,0,0,.42);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .bar {
+    height: 38px;
+    background: #111827;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 14px;
+    border-bottom: 1px solid #273449;
+    color: #9aa8bd;
+    font-size: 13px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .red { background: #ff6b6b; }
+  .yellow { background: #ffd166; }
+  .green { background: #5ee6a8; }
+  .title { margin-left: 8px; }
+  pre {
+    margin: 0;
+    padding: 18px 20px;
+    flex: 1;
+    overflow: hidden;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: #d8e3f0;
+    font: 14px/1.43 Consolas, "Cascadia Mono", "Courier New", monospace;
+  }
+  .prompt { color: #73e0d4; }
+  .cmd { color: #f7d774; font-weight: 700; }
+  .ok { color: #8ff0a4; }
+  .subtitle {
+    position: fixed;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    width: min(1260px, calc(100vw - 28px));
+    z-index: 5;
+    background: rgba(7, 12, 24, 0.88);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.22);
+    box-shadow: 0 16px 46px rgba(0,0,0,0.38);
+    border-radius: 8px;
+    padding: 10px 16px 12px;
+    backdrop-filter: blur(10px);
+  }
+  .subtitle-title {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 4px;
+    color: #9bd3ff;
+    white-space: nowrap;
+  }
+  .subtitle-text {
+    font-size: 19px;
+    line-height: 1.38;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="intro">
+      <h1>SecureMonitor OS 项目启动命令</h1>
+      <p class="lead">演示视频先展示 Docker Compose 启动流程，让老师能直接看到本项目如何从命令行启动完整监控系统。</p>
+      <div class="steps">
+        <div class="step"><div class="num">1</div><div><strong>进入项目目录</strong><span>所有服务编排、Prometheus、Grafana、后端和前端配置都在该目录下执行。</span></div></div>
+        <div class="step"><div class="num">2</div><div><strong>启动全部服务</strong><span>使用 <code>docker compose up -d</code> 后台启动 Prometheus、Grafana、Alertmanager、Exporters 和 SecureMonitor OS。</span></div></div>
+        <div class="step"><div class="num">3</div><div><strong>核对容器状态</strong><span>使用 <code>docker compose ps</code> 查看容器是否处于 Running / healthy 状态。</span></div></div>
+      </div>
+    </section>
+    <section class="terminal">
+      <div class="bar"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span><span class="title">Windows PowerShell - SecureMonitor OS</span></div>
+      <pre><span class="prompt">PS C:\\Users\\52697\\secure-monitor&gt;</span> <span class="cmd">cd C:\\Users\\52697\\secure-monitor</span>
+<span class="prompt">PS C:\\Users\\52697\\secure-monitor&gt;</span> <span class="cmd">docker compose up -d</span>
+<span class="ok">${escapedUp}</span>
+
+<span class="prompt">PS C:\\Users\\52697\\secure-monitor&gt;</span> <span class="cmd">docker compose ps</span>
+${escapedPs}
+
+<span class="prompt">PS C:\\Users\\52697\\secure-monitor&gt;</span> <span class="cmd"># 打开主界面：http://127.0.0.1:7001</span></pre>
+    </section>
+  </main>
+  <div class="subtitle">
+    <div class="subtitle-title">项目启动命令</div>
+    <div class="subtitle-text">先进入项目目录，执行 docker compose up -d 启动全部监控服务，再用 docker compose ps 核对容器状态。</div>
+  </div>
+</body>
+</html>`,
+    { waitUntil: "load" },
+  );
+  await page.waitForTimeout(startupIntroSeconds * 1000);
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 async function ensureSubtitleOverlay(page) {
@@ -655,12 +887,11 @@ async function writePlayerHtml() {
   <h1>SecureMonitor OS 项目演示视频</h1>
   <video controls preload="metadata" poster="poster.png">
     <source src="project_demo.mp4" type="video/mp4" />
-    <source src="project_demo.webm" type="video/webm" />
     <track kind="subtitles" src="subtitles.vtt" srclang="zh-CN" label="中文解说字幕" />
   </video>
   <div class="files">
     <p>视频画面已内嵌解说字幕；外挂 VTT/SRT 字幕文件也已保留。为避免字幕重复叠加，播放页默认不自动开启外挂字幕。</p>
-    <p>文件：<code>project_demo.mp4</code>、<code>project_demo.webm</code>、<code>subtitles.srt</code>、<code>subtitles.vtt</code></p>
+    <p>文件：<code>project_demo.mp4</code>、<code>subtitles.srt</code>、<code>subtitles.vtt</code></p>
   </div>
 </main>
 </body>
@@ -723,7 +954,7 @@ async function convertWebmToMp4(inputPath, outputPath) {
 
 async function main() {
   await fs.mkdir(tempVideoDir, { recursive: true });
-  await resetSimulationState().catch(() => undefined);
+  const startupTranscript = getStartupTranscript();
 
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
@@ -732,9 +963,15 @@ async function main() {
     recordVideo: { dir: tempVideoDir, size: viewport },
   });
   const page = await context.newPage();
+  await showStartupIntro(page, startupTranscript);
+  await resetSimulationState().catch(() => undefined);
   await page.goto(appUrl, { waitUntil: "load", timeout: 20000 });
-  await page.waitForTimeout(4200);
   await ensureSubtitleOverlay(page);
+  await setSubtitle(page, {
+    title: "演示准备",
+    text: "启动命令展示完成，正在进入 SecureMonitor OS 主界面并加载实时监控数据。",
+  });
+  await page.waitForTimeout(initialLoadSeconds * 1000);
   clickNavigation.cursorPoint = { x: 680, y: 380 };
   await setCursorOverlay(page, clickNavigation.cursorPoint);
 

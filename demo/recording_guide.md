@@ -41,19 +41,31 @@ C:\Users\52697\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin
 
 录制时会在页面底部叠加字幕，因此 `project_demo.mp4` 的画面中已经包含字幕。`subtitles.srt` 同时保留，便于后续修改字幕或重新合成。
 
-## 5. 鼠标说明
+## 5. 启动命令开场
+
+最终版视频开头会先录入项目启动命令画面，展示：
+
+```powershell
+cd C:\Users\52697\secure-monitor
+docker compose up -d
+docker compose ps
+```
+
+录制脚本会在生成开场画面前实际执行一次 `docker compose up -d` 和 `docker compose ps`，把当前服务启动结果写入终端画面，随后再进入 `http://127.0.0.1:7001` 展示前端。
+
+## 6. 鼠标说明
 
 Playwright 的视频录制默认不会捕获系统真实鼠标指针。脚本使用一个自定义鼠标指针叠加层，并通过三次贝塞尔曲线同步移动，以保证最终视频中能看到自然移动的鼠标引导。
 
-## 6. Grafana 录制内容
+## 7. Grafana 录制内容
 
 录制脚本会进入真实 Grafana 页面。主机大屏默认显示“Windows 本机 C 盘”，内部映射到 Docker Desktop 可查询的宿主机挂载点；容器大屏会从 Prometheus 动态读取两个 Docker 容器 ID 并切换“监控对象”，再进入安全大屏展示高 CPU 进程数量等模拟安全指标。
 
-## 7. 异常模拟录制内容
+## 8. 异常模拟录制内容
 
 基础页面全部展示完成后，录制脚本会进入“异常模拟”页面并逐个点击模拟按钮：失败登录、可疑请求、风险分数、开放端口、高 CPU 进程、容器重启、服务宕机命令和恢复命令。随后脚本先展示安全中心的指标变化，再等待 Prometheus 抓取与告警规则评估，最后展示告警中心、总览和 Grafana 安全大屏中的变化结果。
 
-## 8. 如果无法录制
+## 9. 如果无法录制
 
 如果浏览器录制失败：
 

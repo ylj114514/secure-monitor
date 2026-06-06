@@ -46,26 +46,27 @@ docker compose ps
 
 ## 5. 演示视频总时长
 
-最终完整演示视频约 6 分钟。该版本不再只做快速浏览，而是完整覆盖 SecureMonitor OS 主界面、Grafana 真实 Dashboard、Kubernetes 扩展研究、异常模拟按钮实操，以及异常触发后的安全中心、告警中心、总览页和 Grafana 安全大屏变化。
+最终完整演示视频约 6 分半。该版本不再只做快速浏览，而是先展示项目启动命令，再完整覆盖 SecureMonitor OS 主界面、Grafana 真实 Dashboard、Kubernetes 扩展研究、异常模拟按钮实操，以及异常触发后的安全中心、告警中心、总览页和 Grafana 安全大屏变化。
 
 ## 6. 演示章节与路线
 
 | 顺序 | 页面 | 展示元素 | 字幕重点 | 鼠标停留目标 | 定位方式 |
 | --- | --- | --- | --- | --- | --- |
-| 1 | 总览 | 顶部状态栏、Targets、告警、综合风险、服务拓扑 | 说明统一控制台和系统整体状态 | 左侧“总览”按钮、总览卡片 | `button[name="总览"]` |
-| 2 | 主机监控 | CPU、内存、磁盘、node_exporter 状态 | 说明物理节点指标采集 | 左侧“主机监控”按钮和资源卡片 | `button[name="主机监控"]` |
-| 3 | 容器监控 | cAdvisor 状态、容器资源指标 | 说明 Docker 容器监控能力 | 左侧“容器监控”按钮和容器卡片 | `button[name="容器监控"]` |
-| 4 | 服务探测 | demo-app、blackbox、probe_success、响应耗时 | 说明 service 可用性探测 | 左侧“服务探测”按钮 | `button[name="服务探测"]` |
-| 5 | Targets | Job、Instance、Health、Labels、搜索过滤 | 说明静态服务发现和 file_sd 动态发现 | 左侧“Targets”按钮和表格 | `button[name="Targets"]` |
-| 6 | 安全中心 | 失败登录、可疑请求、开放端口、容器重启、风险分数 | 说明 security_exporter 安全模拟指标 | 左侧“安全中心”按钮 | `button[name="安全中心"]` |
-| 7 | 告警中心 | 告警统计、严重级别、状态、来源、描述 | 说明 Prometheus + Alertmanager 告警闭环 | 左侧“告警中心”按钮 | `button[name="告警中心"]` |
-| 8 | 告警规则 | 主机、容器、服务、安全四类规则 | 说明 PromQL 条件和排查建议 | 左侧“告警规则”按钮 | `button[name="告警规则"]` |
-| 9 | 验收清单 | 课程要求、项目实现、证据文件、截图建议 | 说明课程提交证据链 | 左侧“验收清单”按钮 | `button[name="验收清单"]` |
-| 10 | Grafana | Dashboard 入口和四类大屏说明 | 说明 Grafana 数据源与 Dashboard | 左侧“Grafana”按钮 | `button[name="Grafana"]` |
-| 11 | Grafana 真实大屏 | 主机、容器、安全 Dashboard，并切换主机磁盘和容器监控对象 | 说明 Grafana provisioning、Prometheus 数据源和不同监控对象切换 | Grafana Dashboard 变量和面板 | Grafana URL |
-| 12 | Kubernetes | kube-prometheus-stack、ServiceMonitor、PodMonitor、k8s 示例 | 说明 Kubernetes 扩展研究 | 左侧“Kubernetes”按钮 | `button[name="Kubernetes"]` |
-| 13 | 异常模拟实操 | 逐个点击失败登录、可疑请求、风险分数、开放端口、高 CPU 进程、容器重启、服务宕机命令和恢复命令 | 先触发异常，再展示安全中心、告警中心、总览和 Grafana 安全大屏变化 | 左侧“异常模拟”按钮和各模拟按钮 | `button[name="异常模拟"]`、`.command-button` |
-| 14 | 总览总结 | 返回系统总览 | 总结采集、告警、可视化、安全指标和课程要求映射闭环 | 左侧“总览”按钮 | `button[name="总览"]` |
+| 1 | 启动命令行 | `cd C:\Users\52697\secure-monitor`、`docker compose up -d`、`docker compose ps`、主界面地址 | 说明项目从命令行启动完整 Docker Compose 监控系统 | 终端启动画面 | 自动生成终端开场 |
+| 2 | 总览 | 顶部状态栏、Targets、告警、综合风险、服务拓扑 | 说明统一控制台和系统整体状态 | 左侧“总览”按钮、总览卡片 | `button[name="总览"]` |
+| 3 | 主机监控 | CPU、内存、磁盘、node_exporter 状态 | 说明物理节点指标采集 | 左侧“主机监控”按钮和资源卡片 | `button[name="主机监控"]` |
+| 4 | 容器监控 | cAdvisor 状态、容器资源指标 | 说明 Docker 容器监控能力 | 左侧“容器监控”按钮和容器卡片 | `button[name="容器监控"]` |
+| 5 | 服务探测 | demo-app、blackbox、probe_success、响应耗时 | 说明 service 可用性探测 | 左侧“服务探测”按钮 | `button[name="服务探测"]` |
+| 6 | Targets | Job、Instance、Health、Labels、搜索过滤 | 说明静态服务发现和 file_sd 动态发现 | 左侧“Targets”按钮和表格 | `button[name="Targets"]` |
+| 7 | 安全中心 | 失败登录、可疑请求、开放端口、容器重启、风险分数 | 说明 security_exporter 安全模拟指标 | 左侧“安全中心”按钮 | `button[name="安全中心"]` |
+| 8 | 告警中心 | 告警统计、严重级别、状态、来源、描述 | 说明 Prometheus + Alertmanager 告警闭环 | 左侧“告警中心”按钮 | `button[name="告警中心"]` |
+| 9 | 告警规则 | 主机、容器、服务、安全四类规则 | 说明 PromQL 条件和排查建议 | 左侧“告警规则”按钮 | `button[name="告警规则"]` |
+| 10 | 验收清单 | 课程要求、项目实现、证据文件、截图建议 | 说明课程提交证据链 | 左侧“验收清单”按钮 | `button[name="验收清单"]` |
+| 11 | Grafana | Dashboard 入口和四类大屏说明 | 说明 Grafana 数据源与 Dashboard | 左侧“Grafana”按钮 | `button[name="Grafana"]` |
+| 12 | Grafana 真实大屏 | 主机、容器、安全 Dashboard，并切换主机磁盘和容器监控对象 | 说明 Grafana provisioning、Prometheus 数据源和不同监控对象切换 | Grafana Dashboard 变量和面板 | Grafana URL |
+| 13 | Kubernetes | kube-prometheus-stack、ServiceMonitor、PodMonitor、k8s 示例 | 说明 Kubernetes 扩展研究 | 左侧“Kubernetes”按钮 | `button[name="Kubernetes"]` |
+| 14 | 异常模拟实操 | 逐个点击失败登录、可疑请求、风险分数、开放端口、高 CPU 进程、容器重启、服务宕机命令和恢复命令 | 先触发异常，再展示安全中心、告警中心、总览和 Grafana 安全大屏变化 | 左侧“异常模拟”按钮和各模拟按钮 | `button[name="异常模拟"]`、`.command-button` |
+| 15 | 总览总结 | 返回系统总览 | 总结采集、告警、可视化、安全指标和课程要求映射闭环 | 左侧“总览”按钮 | `button[name="总览"]` |
 
 ## 7. 字幕规划
 

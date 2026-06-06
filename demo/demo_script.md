@@ -1,10 +1,22 @@
 # SecureMonitor OS 演示视频分镜与讲解脚本
 
-## 片头：演示准备
+## 片头：项目启动命令
+
+画面：终端启动画面展示项目目录、Docker Compose 启动命令和容器状态检查命令。
+
+字幕：项目启动命令：进入项目目录，执行 docker compose up -d 启动全部监控服务，再用 docker compose ps 核对容器状态。
+
+讲解要点：
+- 进入项目目录：`cd C:\Users\52697\secure-monitor`。
+- 启动服务：`docker compose up -d`。
+- 查看状态：`docker compose ps`。
+- 主界面地址：`http://127.0.0.1:7001`。
+
+## 过渡：演示准备
 
 画面：浏览器打开 SecureMonitor OS，等待实时数据加载。
 
-字幕：演示准备：系统正在加载监控数据和 SecureMonitor OS 主界面。
+字幕：演示准备：启动命令展示完成，正在进入 SecureMonitor OS 主界面并加载实时监控数据。
 
 ## 1. 系统总览
 
